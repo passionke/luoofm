@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
+    <title>Player</title>
+    <link rel="stylesheet" type="text/css" href="../plugin/css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <script type="text/javascript" src="js/phonegap.js"></script>
+    <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="../plugin/jquery-jplayer/jquery.jplayer.js"></script>
+    <script type="text/javascript" src="../plugin/ttw-music-player.js"></script>
+    <script type="text/javascript" src="js/iscroll.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var description = '';
+            var playListStr = '{"cover":"http://www.luoo.net/wp-content/uploads/385.jpg","vol":"385","playList":[{"mp3":"http://ftp.luoo.net/radio/radio385/01.mp3", "title":"01.One Star Closer ", "artist":"– Her Name Was Tragedy 选自《The Oceans We Are Drowned In》","cover":"http://img1.douban.com/lpic/s6766602.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/02.mp3", "title":"02.Flying Virgins ", "artist":"– Twillight Days 选自《Your Spectacular Light》","cover":"http://www.luoo.net/wp-content/uploads/cover_354859.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/03.mp3", "title":"03.The Vera Violets ", "artist":"– Somewhere Else 选自《Somewhere Else》","cover":"http://img1.douban.com/lpic/s7054852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/04.mp3", "title":"04.木马 ", "artist":"– 纯洁 选自《木马》","cover":"http://img1.douban.com/lpic/s1734860.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/05.mp3", "title":"05.Silver Screen ", "artist":"– When You Don’t See Me 选自《When You Don’t See Me》","cover":"http://www.luoo.net/wp-content/uploads/cover_335635.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/06.mp3", "title":"06.The Czars ", "artist":"– Angel Eyes 选自《Sorry I Made You Cry》","cover":"http://img5.douban.com/lpic/s2700479.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/07.mp3", "title":"07.Exlovers ", "artist":"– Emily 选自《Moth》","cover":"http://img1.douban.com/lpic/s9085543.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/08.mp3", "title":"08.Amurekimuri ", "artist":"– April Rain 选自《Amurekimuri》","cover":"http://img3.douban.com/lpic/s4471258.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/09.mp3", "title":"09.Gersey ", "artist":"– Crashing 选自《Beastly (Songs from the Motion Picture)》","cover":"http://img1.douban.com/lpic/s4670064.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/10.mp3", "title":"10.The Capsules ", "artist":"– When the Radio Stops 选自《Someone for Everyone》","cover":"http://img1.douban.com/lpic/s1677982.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/11.mp3", "title":"11.Neither; Neither World ", "artist":"– Darklands 选自《Suicide Notes》","cover":"http://img5.douban.com/lpic/s3735039.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/12.mp3", "title":"12.Sun Kil Moon ", "artist":"– The Moderately Talented Yet Attractive Young Woman vs. the Exceptionally Talented Yet Not So Attractive Middle Aged Man 选自《Among The Leaves》","cover":"http://img3.douban.com/lpic/s8966448.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/13.mp3", "title":"13.Nova International ", "artist":"– And There She Goes 选自《One And One Is One》","cover":"http://img3.douban.com/lpic/s3159706.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/14.mp3", "title":"14.Líam ", "artist":"– II 选自《MMIX》","cover":"http://img1.douban.com/lpic/s8985814.jpg"}]}';
+            var playList;
+            if (window.LuooFm){
+               playListStr = LuooFm.getPlayList();
+               LuooFm.play('http://ftp.luoo.net/radio/radio385/14.mp3', '385');
+            }
+            playList = JSON.parse(playListStr);
+            window.vol = playList["vol"];
+            console.log(playList["playList"]);               
+            
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
