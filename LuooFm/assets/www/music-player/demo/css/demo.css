@@ -9,11 +9,14 @@ body {
     background: #444 url(../images/bg.jpg) repeat 0 0 scroll;
     width:100%;
     height:800px;
+    overflow: hidden;
     font-family: 'Chivo', sans-serif;
 }
 .luoo-fm {
     width:100%;
     height:800px;
+    overflow: hidden;
+    display: block;;
 }
 .luoo-fm ul.page{
     width:100%;
@@ -21,7 +24,7 @@ body {
     margin: 0;
     padding: 0;
     position: absolute;
-    -webkit-transition:left 0.3s ease-in;
+    -webkit-transition:left 0.4s ease-in;
 }
 #luoo_list {
     left:100%;
@@ -33,9 +36,6 @@ body {
 .luoo-fm ul.page .luoo-fm-player-body > div {
     margin:0 auto;
 }
-
-
-
 .logo {
     width:120px;
     height:60px;
