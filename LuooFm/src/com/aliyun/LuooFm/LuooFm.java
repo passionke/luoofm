@@ -26,7 +26,9 @@ public class LuooFm {
 		}
 		return this.luooPlayerService.getPlayingStatus();
 	}
-
+	public void play() throws Exception {
+		this.luooPlayerService.play();
+	}
 	public void play(String url, String vol) throws IOException {
 		if (this.luooPlayerService == null){
 			this.luooPlayerService = ctx.getLuooMediaPlayer();

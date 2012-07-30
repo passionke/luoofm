@@ -223,8 +223,7 @@ public class LuooMediaPlayer extends Service {
 		}  
 	}  
 
-	public void moveFile(File oldLocation, File newLocation) throws IOException {  
-
+	public void moveFile(File oldLocation, File newLocation) throws IOException { 
 		if ( oldLocation.exists( )) {  
 			BufferedInputStream  reader = new BufferedInputStream( new FileInputStream(oldLocation) );  
 			BufferedOutputStream  writer = new BufferedOutputStream( new FileOutputStream(newLocation, false));  
@@ -328,14 +327,10 @@ public class LuooMediaPlayer extends Service {
 		}  
 	}  
 	
-	private void play() throws Exception {  
-		//TODO  �峰�姝��璺��  
-		try {  
-			//    myApp.setPlaying_position(position);  //璁剧疆姝�� 褰������炬�璁� 
-			player.reset();  
-			//player.setDataSource(songPath);  
-			player.start();  
-			//musicName = music_name.get(position);    
+	public void play() throws Exception {  
+		try {
+			mediaPlayer.seekTo(mediaPlayer.getCurrentPosition());
+			mediaPlayer.start();   
 		} catch (Exception e) {  
 			e.printStackTrace();  
 		}  

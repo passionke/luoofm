@@ -32,9 +32,16 @@
               var minute = Math.floor(seconds/60);
               var second = seconds%60;
               return minute + ":" + (second<10?"0" + second:second);
-            }       
+            }   
+            var playPreTrack = function(index, vol) {
+              var par = $('.list-wrap ul[vol=' + vol + ']');
+              if (parseInt(index) == 0){
+                  par.find('li:last').click();
+              }else{
+                  par.find('li[index=' + (parseInt(index) - 1) + ']').click();
+              }
+            }    
             var playNextTrack = function(index, vol)  {
-              console.log( 'index ' + index + 'dfd f' + vol);
               var par = $('.list-wrap ul[vol=' + vol + ']');
               if (parseInt(index) == par.find('li').length - 1){
                   par.find('li:first').click();
@@ -53,7 +60,6 @@
                 updater = setInterval(function(){
                   if (!window.LuooFm) return;
                   var status = LuooFm.getPlayingStatus();
-                  console.log(status);
                   var statusObj = JSON.parse(status);
                   if (statusObj["playing"] != undefined){
                       $('.time .now').text(timeFormate(statusObj['cur']));
@@ -80,17 +86,42 @@
                 LuooFm.pause();
                 clearInterval(updater);
             }
+
+            $('.luoo-fm-player-body .controls .play').live('click', function(e){
+                var target = $(e.currentTarget);
+                if (LuooFm) {
+                  LuooFm.pause();
+                  console.log('now will be pause');
+                   target.removeClass('play').addClass('pause');
+                   target[0].src = 'images/player_pause.png';
+                }
+            });
+            $('.luoo-fm-player-body .controls .pause').live('click', function(e){
+              var target = $(e.currentTarget);
+                if (LuooFm) {
+                  LuooFm.play();
+                  console.log("now will be paly");
+                  target.removeClass('pause').addClass('play');
+                  target[0].src = 'images/player_play.png'; 
+                } 
+            });
+
+            $('.luoo-fm-player-body .controls .pre').on('click', function(e){
+                  var index = $('.list-wrap ul li.selected').attr('index');
+                  var vol = $('.list-wrap ul li.selected').parent().attr('vol');
+                  console.log('index  ' + index + ' vol  ' + vol);
+                  playPreTrack(index, vol);
+            });
+
+            $('.luoo-fm-player-body .controls .next').on('click', function(e){
+                  var index = $('.list-wrap ul li.selected').attr('index');
+                  var vol = $('.list-wrap ul li.selected').parent().attr('vol');
+                  playNextTrack(index, vol);
+            });
+            
             $('.luoo-fm-player-body .controls img').on('mousedown touchstart', function(e){
                 $(e.currentTarget).addClass('pressed');
                 $('.luoo-fm-player-body .controls img').one('mouseup touchend', function(e){
-                    var target = $(e.currentTarget);
-                    if (target.hasClass('play')){
-                        target.removeClass('play').addClass('pause');
-                        target[0].src = 'images/player_pause.png';
-                    }else if (target.hasClass('pause')){
-                        target.removeClass('pause').addClass('play');
-                        target[0].src = 'images/player_play.png';   
-                    }
                     $(e.currentTarget).removeClass('pressed');
                 });   
             });
