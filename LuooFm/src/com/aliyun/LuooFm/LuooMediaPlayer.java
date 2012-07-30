@@ -35,23 +35,21 @@ public class LuooMediaPlayer extends Service {
 	private static Runnable r;
 	private static Thread playerThread;
 	private File destFile;
-	private int totalLength;
-	private int totalBytesRead;
-	private String lastPlay;
-	private Object lastDownloading;
+	private int totalLength = 1;
+	private int totalBytesRead = 1;
+	private String lastPlay = "";
+	private String lastDownloading = "";
 
 	public LuooMediaPlayer() {
 	}
 	public void startStreaming(final String mediaUrl, File destFile) throws IOException {
-		
 		this.pausePlayer();
-		if (this.mediaPlayer != null){
-			this.mediaPlayer.reset();
-		}
 		this.isInterrupted = false;
 		if (this.playerThread != null){
 			if (!lastDownloading.equals(mediaUrl) && this.playerThread.isAlive()){
 				this.isInterrupted = true;
+				this.mediaPlayer.release();
+				this.mediaPlayer = null;
 			}else{
 				lastDownloading = mediaUrl;
 			}
@@ -134,14 +132,7 @@ public class LuooMediaPlayer extends Service {
 						//  We test for < 1second of data because the media player can stop when there is still  
 						//  a few milliseconds of data left to play  
 						transferBufferToMediaPlayer();  
-					}
-					if (!mediaPlayer.isPlaying())
-						try {
-							play();
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-					}
+					}					
 				}  
 			}
 
@@ -174,7 +165,7 @@ public class LuooMediaPlayer extends Service {
 			moveFile(downloadingMediaFile,bufferedFile);  
 			
 			mediaPlayer = createMediaPlayer(bufferedFile);  
-
+			mediaPlayer.seekTo(0);
 			// We have pre-loaded enough content and started the MediaPlayer so update the buttons & progress meters.  
 			mediaPlayer.start();  
 			startPlayProgressUpdater();              
@@ -325,8 +316,7 @@ public class LuooMediaPlayer extends Service {
 			// this always happens so quickly that the user never realized we've stopped the player and started a new one  
 			// Create a new MediaPlayer rather than try to re-prepare the prior one.  
 			mediaPlayer = createMediaPlayer(bufferedFile);  
-			mediaPlayer.seekTo(curPosition);  
-
+			mediaPlayer.seekTo(curPosition); 
 			//  Restart if at end of prior buffered content or mediaPlayer was previously playing.    
 			//    NOTE:  We test for < 1second of data because the media player can stop when there is still  
 			//  a few milliseconds of data left to play  
@@ -339,9 +329,9 @@ public class LuooMediaPlayer extends Service {
 	}  
 	
 	private void play() throws Exception {  
-		//TODO  获取歌曲路径  
+		//TODO  �峰�姝��璺��  
 		try {  
-			//    myApp.setPlaying_position(position);  //设置歌曲 当前的播放标记  
+			//    myApp.setPlaying_position(position);  //璁剧疆姝�� 褰������炬�璁� 
 			player.reset();  
 			//player.setDataSource(songPath);  
 			player.start();  

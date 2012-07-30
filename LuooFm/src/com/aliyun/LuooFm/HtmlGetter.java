@@ -31,9 +31,7 @@ public class HtmlGetter {
 	            reader = new BufferedReader(new FileReader(file));
 	            String tempString = null;
 	            int line = 1;
-	            // 一次读入一行，直到读入null为文件结束
 	            while ((tempString = reader.readLine()) != null) {
-	                // 显示行号
 	                strBuf.append(tempString);
 	            }
 	            reader.close();
@@ -71,7 +69,6 @@ public class HtmlGetter {
 		FileOutputStream fos = new FileOutputStream(playListFile, true);
 		fos.write(playList.toString().getBytes());
 		fos.close();
-		
 		return playList.toString();
 	}
 	public String getPlayList(int index) throws IOException{

@@ -36,10 +36,10 @@
             var playNextTrack = function(index, vol)  {
               console.log( 'index ' + index + 'dfd f' + vol);
               var par = $('.list-wrap ul[vol=' + vol + ']');
-              if (index == par.find('li').length - 1){
+              if (parseInt(index) == par.find('li').length - 1){
                   par.find('li:first').click();
               }else{
-                  par.find('li[index=' + (index + 1) + ']').click();
+                  par.find('li[index=' + (parseInt(index) + 1) + ']').click();
               }
             }   
             var playTrack = function(index, vol){
@@ -68,7 +68,7 @@
                           $('.controls img:eq(1)').removeClass('play').addClass('pause');
                           $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
                       }
-                      if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur']/10){
+                      if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur'] - 1000){
                           clearInterval(updater);
                           playNextTrack(index, vol);
                           console.log('playNextTrack');
@@ -76,7 +76,6 @@
                   }
                 }, 1000);
             }
-            
             var pauseTrack = function(){
                 LuooFm.pause();
                 clearInterval(updater);
@@ -95,7 +94,6 @@
                     $(e.currentTarget).removeClass('pressed');
                 });   
             });
-
             $('.logo').on('click', function(){
                 if ($('#luoo_list').css('left') == '0px'){
                     $('#luoo_player').css('left', '0');
@@ -104,8 +102,7 @@
                     $('#luoo_player').css('left', '-100%');
                     $('#luoo_list').css('left', '0');    
                 }                
-            });       
-
+            });
             $('.list-wrap ul li').live('click', function(e){
                 $('.list-wrap ul li.selected').removeClass('selected');
                 var target = $(e.currentTarget);
@@ -146,6 +143,9 @@
                 var index = 0;
                 window.plugins.luoogetplaylist.getPlayList(0, function(result){
                     renderVol(JSON.parse(result));
+                    setTimeout(function(){
+                        $('.list-wrap ul:first li:first').click();
+                     }, 0)
                 },
                 function(e){
                     console.log(e);
