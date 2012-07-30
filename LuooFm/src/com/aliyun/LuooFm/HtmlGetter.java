@@ -23,7 +23,7 @@ public class HtmlGetter {
 		
 	}
 	
-	private String getPlayListLocaly(File file) {
+	private String getPlayListLocaly(File file, String url, String vol) throws IOException {
 		Log.d("my", "get playList locally");
 		 BufferedReader reader = null;
 		 StringBuffer strBuf = new StringBuffer();
@@ -45,7 +45,12 @@ public class HtmlGetter {
 	                }
 	            }
 	        }
-		return strBuf.toString();
+	    if (strBuf.toString().endsWith("}")){
+	    		return strBuf.toString();
+	    }else{
+	    		return this.getPlayListRemote(url, file, vol);
+	    }
+		
 	}
 	public String getPlayListRemote(String url, File playListFile, String vol) throws IOException {
 		playListFile.getParentFile().mkdirs();
@@ -71,6 +76,7 @@ public class HtmlGetter {
 		fos.close();
 		return playList.toString();
 	}
+	
 	public String getPlayList(int index) throws IOException{
 		if (index < 0){
 			index = 0;
@@ -84,7 +90,7 @@ public class HtmlGetter {
 		String sdCardDir = Environment.getExternalStorageDirectory() + "/LuooFm/vol" + vol + "/";
 		File playListFile = new File(sdCardDir + "playList.json");
 		if (playListFile.exists()){
-			return this.getPlayListLocaly(playListFile);
+			return this.getPlayListLocaly(playListFile, li.attr("href"), vol);
 		}else{
 			return this.getPlayListRemote(li.attr("href"), playListFile, vol);
 		}		
