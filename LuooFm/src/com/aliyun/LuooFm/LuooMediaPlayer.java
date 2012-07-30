@@ -89,8 +89,7 @@ public class LuooMediaPlayer extends Service {
 		// store any previously downloaded file in a separate data cache for instant replay if you wanted as well.  
 		if (downloadingMediaFile.exists()) {  
 			downloadingMediaFile.delete();  
-		}  
-		
+		}
 		FileOutputStream out = new FileOutputStream(downloadingMediaFile);     
 		byte buf[] = new byte[16384];  
 		totalBytesRead = 0;  

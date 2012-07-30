@@ -174,9 +174,7 @@
                 // get the latest playlist form start to end
                 var getPlayList = function(start, end){
                     window.plugins.luoogetplaylist.getPlayList(start, function(result){
-                        console.log(typeof(result));
                         if (result.substr(-1) != '}'){
-                          //get play list again, if the result is not a correct json string
                           getPlayList(start, end);
                           return;
                         }
@@ -193,6 +191,9 @@
                     },
                     function(e){
                         console.log(e);
+                        //get play list again, if something wrong was happend
+                        getPlayList(start, end); 
+                        return;
                     });  
                 }
                 getPlayList(0, 4); 

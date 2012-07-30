@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -54,22 +58,29 @@ public class HtmlGetter {
 	    }
 		
 	}
-	public String getPlayListRemote(String url, File playListFile, String vol) throws IOException {
-		
-		Document doc = Jsoup.connect(url).get();
+	
+	public String getPlayListRemote(String url, File playListFile, String vol) throws IOException {		
+		Document doc = Jsoup.connect(url).timeout(30000).get();
 		String volTitle = doc.select(".title a").get(0).text();
 		Element post = doc.select(".post").get(0);
 		Elements songsInfo = post.select(".post-txt p");
 		String cover = songsInfo.get(0).getElementsByTag("img").get(0).attr("src");		
 		PlayList playList = new PlayList(cover, vol, volTitle);		
 		int  j = 0;
-		for (int i = 3; i < songsInfo.size(); i = i+ 2){
-			String poster = songsInfo.get(i).getElementsByTag("img").get(0).attr("src");
-			String info = songsInfo.get(i + 1).text();
-			String title = info.substring(0, info.indexOf("–"));
-			String airtist = info.substring(info.indexOf("–") + 2, info.length());
-			j = j + 1;
-			playList.appendSong( j, title, airtist, poster);
+		// vol输出的网页中，有的可能会出现一个空的<p>，或者没有图片的p，处理的方式为：若当前p不包含img，则i+1，
+		
+		for (int i = 2; i < songsInfo.size(); i = i+ 2){
+			Elements imgs = songsInfo.get(i).select("img");
+			if (imgs.size() > 0){
+				String poster = songsInfo.get(i).select("img").get(0).attr("src");
+				String info = songsInfo.get(i + 1).text();
+				String title = info.substring(0, info.indexOf("–"));
+				String airtist = info.substring(info.indexOf("–") + 2, info.length());
+				j = j + 1;
+				playList.appendSong( j, title, airtist, poster);
+			}else{
+				i = i + 1;
+			}			
 		}
 		//save list file to sdcard
 		playListFile.getParentFile().mkdirs();
@@ -80,18 +91,14 @@ public class HtmlGetter {
 		return playList.toString();
 	}
 	
-	public String getPlayList(int index) throws IOException{
-		if (index < 0){
-			index = 0;
-		}else if (index > 5){
-			index = 5;
-		}
-		Document doc = Jsoup.connect("http://luoo.net/").get();
+	public String getPlayList(int index) throws IOException{		
+		Document doc = Jsoup.connect("http://www.luoo.net").timeout(30000).get();
 		Element nowVol = doc.select("#sidebar li:eq(" + index + ")").get(0);
 		Element li = nowVol.getElementsByTag("a").get(0);
 		String vol = li.attr("href").replace("http://www.luoo.net/", "").replaceAll("/","");
 		String sdCardDir = Environment.getExternalStorageDirectory() + "/LuooFm/vol" + vol + "/";
 		File playListFile = new File(sdCardDir + "playList.json");
+		Log.d("my", "index   :" + li.attr("href"));
 		if (playListFile.exists()){
 			return this.getPlayListLocaly(playListFile, li.attr("href"), vol);
 		}else{
