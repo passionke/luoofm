@@ -1,7 +1,5 @@
 package com.aliyun.LuooFm;
 
-
-
 public class PlayListItem {
 	private String mp3;
 	private String title;

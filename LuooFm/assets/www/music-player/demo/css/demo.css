@@ -1,43 +1,171 @@
-/*@font-face {*/
-    /*font-family: Lato;*/
-    /*src: url('../fonts/Lato-Regular.ttf');*/
-/*}*/
-
-/*@font-face {*/
-    /*font-family: Lato Italic;*/
-    /*src: url('../fonts/Lato-Italic.ttf');*/
-/*}*/
-
-/*@font-face {*/
-    /*font-family: Lato Bold;*/
-    /*src: url('../fonts/Lato-Bold.ttf');*/
-/*}*/
-
+::::-moz-selection,
+::selection {
+    color: rgba(0,0,0,0);
+    background: rgba(0,0,0,0);
+}
 html { overflow-y: scroll; }
 
 body {
     background: #444 url(../images/bg.jpg) repeat 0 0 scroll;
+    width:100%;
+    height:800px;
+    font-family: 'Chivo', sans-serif;
+}
+.luoo-fm {
+    width:100%;
+    height:800px;
+}
+.luoo-fm ul.page{
+    width:100%;
+    height:100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    -webkit-transition:left 0.3s ease-in;
+}
+#luoo_list {
+    left:100%;
+}
+.luoo-fm ul.page .luoo-fm-player-body {
+    width:350px;
+    margin: 0 auto;
+}
+.luoo-fm ul.page .luoo-fm-player-body > div {
+    margin:0 auto;
 }
 
-#title{
-    background:transparent url(../images/title.png) 0 0 scroll;
-    position:absolute;
-    top:60px;
-    left:24px;
-    height:62px;
-    width:334px;
+
+
+.logo {
+    width:120px;
+    height:60px;
+    background: url('../images/logo9.png') 0 0 no-repeat;
+    margin:25px auto !important;
 }
 
-#download{
-    position:absolute;
-    top:132px;
-    left:30px;
-    text-decoration:none;
-    font-size:12px;
-    color:#999;
-    font-family:arial, sans-serif;
+.luoo-fm-player-body .poster {
+    width:250px;
+    height:250px;
+    margin-top:30px !important;
+}
+.luoo-fm-player-body .poster img {
+    width:100%;
+    height:100%;
+    border-radius:15px;
+    box-shadow:0 0 10px green;box-shadow:0 0 6px 3px #00AFFF;
+}
+.luoo-fm-player-body .track-info {    
+    text-align:center;
+    color: #FFF;
+}
+.luoo-fm-player-body .track-info .title {
+    font-size:37px;
+    margin-top: 26px auto;
+    margin-bottom:19px;
+}
+.luoo-fm-player-body .track-info .album {
+    font-size:18px;
+}
+.luoo-fm-player-body .controls {
+    width:240px;
+}
+.luoo-fm-player-body .controls .pre,
+.luoo-fm-player-body .controls .next {
+    width:60px;
+}
+.luoo-fm-player-body .controls img {
+    margin-left: 10px;
+    border-radius:10px;
+}
+.luoo-fm-player-body .controls img.pressed {
+     box-shadow:0 0 10px green;box-shadow:0 0 6px 3px #00AFFF;
+}
+.luoo-fm-player-body .controls .play,
+.luoo-fm-player-body .controls .pause {
+    width:80px;
+}
+.luoo-fm-player-body .timing {
+    width:340px;
+    height:7px;
+    border-radius:3px;
+    margin-top:20px !important;
+    background-color: #333333;
+    box-shadow:2px 2px 5px #666666
+}
+.luoo-fm-player-body .timing .played{
+    width:0%;
+    height:7px;
+    position: absolute;
+    border-radius:3px;
+    background-color:#FFF;
+    box-shadow:0 0 10px green;box-shadow:0 0 6px 2px #55D9FF;
 }
 
-#download:hover{
-    color:#fff;
+.luoo-fm-player-body .timing .download{
+    width:0%;
+    height:7px;
+    position: absolute;
+    border-radius:3px;
+    background-color:#999999;
+}
+
+.luoo-fm-player-body .timing .time{
+    position: relative;
+    top:15px;
+    font-size:18px;
+    color: #FFF;
+}
+.luoo-fm-player-body .timing .time .now{
+    float: left;
+}
+.luoo-fm-player-body .timing .time .total {
+    float: right;
+}
+
+#luoo_list .list-wrap {
+    margin: 20px;
+    background-color:rgba(33, 33, 33, 0.5);    
+}
+.list-wrap > ul {
+    list-style:none;
+    color: #FFF;
+    margin: 0;
+    padding: 0;
+    height:58px;
+    overflow: hidden;
+    border-bottom:1px solid #666666;
+}
+.list-wrap ul.open > h3{
+    background:url('../images/list_open.png') 100% 50% no-repeat;
+    background-color:#00AFFF;
+}
+.list-wrap ul h3{
+    display:block !important;
+    overflow:hidden !important;
+    line-height:58px;
+    height:58px;
+    font-size:20px;     
+    margin: 0;
+    padding: 0;  
+    background:url('../images/list_close.png') 100% 50% no-repeat;
+    white-space:nowrap;
+}
+.list-wrap ul h3 > span {
+    margin-left:20px;
+}
+.list-wrap ul > li {
+    height:48px;
+    line-height:48px;
+}
+.list-wrap ul > li{
+
+}
+.list-wrap ul > li > span {
+    margin-left:40px;
+}
+.list-wrap ul.open > li {
+    display: block;
+}
+.list-wrap ul.open > li.selected {
+    background:rgba(255, 255, 255, 0.1);
 }

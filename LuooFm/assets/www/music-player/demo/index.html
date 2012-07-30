@@ -4,31 +4,188 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
     <title>Player</title>
-    <link rel="stylesheet" type="text/css" href="../plugin/css/style.css">
+    <link href='css/Chivo.css' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/demo.css">
     <script type="text/javascript" src="js/phonegap.js"></script>
-    <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
-    <script type="text/javascript" src="../plugin/jquery-jplayer/jquery.jplayer.js"></script>
-    <script type="text/javascript" src="../plugin/ttw-music-player.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/iscroll.js"></script>
-
+    <script type="text/javascript" src="js/myplaylist.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            var description = '';
-            var playListStr = '{"cover":"http://www.luoo.net/wp-content/uploads/385.jpg","vol":"385","playList":[{"mp3":"http://ftp.luoo.net/radio/radio385/01.mp3", "title":"01.One Star Closer ", "artist":"– Her Name Was Tragedy 选自《The Oceans We Are Drowned In》","cover":"http://img1.douban.com/lpic/s6766602.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/02.mp3", "title":"02.Flying Virgins ", "artist":"– Twillight Days 选自《Your Spectacular Light》","cover":"http://www.luoo.net/wp-content/uploads/cover_354859.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/03.mp3", "title":"03.The Vera Violets ", "artist":"– Somewhere Else 选自《Somewhere Else》","cover":"http://img1.douban.com/lpic/s7054852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/04.mp3", "title":"04.木马 ", "artist":"– 纯洁 选自《木马》","cover":"http://img1.douban.com/lpic/s1734860.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/05.mp3", "title":"05.Silver Screen ", "artist":"– When You Don’t See Me 选自《When You Don’t See Me》","cover":"http://www.luoo.net/wp-content/uploads/cover_335635.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/06.mp3", "title":"06.The Czars ", "artist":"– Angel Eyes 选自《Sorry I Made You Cry》","cover":"http://img5.douban.com/lpic/s2700479.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/07.mp3", "title":"07.Exlovers ", "artist":"– Emily 选自《Moth》","cover":"http://img1.douban.com/lpic/s9085543.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/08.mp3", "title":"08.Amurekimuri ", "artist":"– April Rain 选自《Amurekimuri》","cover":"http://img3.douban.com/lpic/s4471258.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/09.mp3", "title":"09.Gersey ", "artist":"– Crashing 选自《Beastly (Songs from the Motion Picture)》","cover":"http://img1.douban.com/lpic/s4670064.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/10.mp3", "title":"10.The Capsules ", "artist":"– When the Radio Stops 选自《Someone for Everyone》","cover":"http://img1.douban.com/lpic/s1677982.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/11.mp3", "title":"11.Neither; Neither World ", "artist":"– Darklands 选自《Suicide Notes》","cover":"http://img5.douban.com/lpic/s3735039.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/12.mp3", "title":"12.Sun Kil Moon ", "artist":"– The Moderately Talented Yet Attractive Young Woman vs. the Exceptionally Talented Yet Not So Attractive Middle Aged Man 选自《Among The Leaves》","cover":"http://img3.douban.com/lpic/s8966448.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/13.mp3", "title":"13.Nova International ", "artist":"– And There She Goes 选自《One And One Is One》","cover":"http://img3.douban.com/lpic/s3159706.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio385/14.mp3", "title":"14.Líam ", "artist":"– II 选自《MMIX》","cover":"http://img1.douban.com/lpic/s8985814.jpg"}]}';
-            var playList;
-            if (window.LuooFm){
-               playListStr = LuooFm.getPlayList();
-               LuooFm.play('http://ftp.luoo.net/radio/radio385/14.mp3', '385');
+             var updater;
+             var currentTrack;
+             var test = '{"title":"VOL.386 Sex, Drugs, and Rock ‘n Roll","cover":"http://www.luoo.net/wp-content/uploads/386.jpg","vol":"386","playList":[{"mp3":"http://ftp.luoo.net/radio/radio386/01.mp3", "title":"01.EVO ", "artist":"– Requiem for a Dream (Clint Mansell cover) 选自《На Краю Вселенной》","cover":"http://www.luoo.net/wp-content/uploads/cover_467323.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/02.mp3", "title":"02.Nachtmahr ", "artist":"– Rise and Fall (Patrick Damiani Remix) 选自《Can You Feel the Beat?》","cover":"http://img1.douban.com/lpic/s6974331.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/03.mp3", "title":"03.Funker Vogt ", "artist":"– Cold War 选自《Maschine Zeit》","cover":"http://img3.douban.com/lpic/s1504918.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/04.mp3", "title":"04.Terminal Choice ", "artist":"– Keine Macht 选自《Übermacht》","cover":"http://img1.douban.com/lpic/s4190852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/05.mp3", "title":"05.Noisuf-X ", "artist":"– Please Hang Up 选自《Excessive Exposure》","cover":"http://img1.douban.com/lpic/s4214624.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/06.mp3", "title":"06.Psyclon Nine ", "artist":"– We The Fallen 选自《We The Fallen》","cover":"http://img3.douban.com/lpic/s3935157.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/07.mp3", "title":"07.Blue Stahli ", "artist":"– Overklock 选自《Antisleep, Vol. 01》","cover":"http://img3.douban.com/lpic/s4460407.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/08.mp3", "title":"08.Velvet Acid Christ ", "artist":"– Black Rainbows 选自《The Art Of Breaking Apart》","cover":"http://img3.douban.com/lpic/s4048876.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/09.mp3", "title":"09.XMH ", "artist":"– Tears In Rain 选自《State Of Mind》","cover":"http://img1.douban.com/lpic/s4358944.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/10.mp3", "title":"10.Rammstein; Northern Lite ", "artist":"– Rosenrot (Northern Lite Remix) 选自《Rosenrot》","cover":"http://img1.douban.com/lpic/s3912724.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/11.mp3", "title":"11.Otto Dix ", "artist":"– Зона Теней 选自《Зона Теней》","cover":"http://img1.douban.com/lpic/s3692964.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/12.mp3", "title":"12.Unheilig;Xavier Naidoo ", "artist":"– Zeitreise 选自《Lichter der Stadt》","cover":"http://img5.douban.com/lpic/s8901929.jpg"}]}';
+
+             var renderVol = function(vol){
+                 var playListHtml = ' <ul vol="' + vol["vol"] + '"><h3><span>' + vol["title"] + '</span></h3>';
+                 var playList = vol["playList"];
+                 var tracks = '';
+                 for (var i = 0; i < playList.length; i++){
+                    tracks = '<li index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
+                    playListHtml += tracks;
+                 }
+                 playListHtml += '</ul>';                 
+                 $('.list-wrap').append(playListHtml);
+             }    
+            var timeFormate = function(ms) {
+              var seconds = Math.floor(ms/1000);
+              var minute = Math.floor(seconds/60);
+              var second = seconds%60;
+              return minute + ":" + (second<10?"0" + second:second);
+            }       
+            var playNextTrack = function(index, vol)  {
+              console.log( 'index ' + index + 'dfd f' + vol);
+              var par = $('.list-wrap ul[vol=' + vol + ']');
+              if (index == par.find('li').length - 1){
+                  par.find('li:first').click();
+              }else{
+                  par.find('li[index=' + (index + 1) + ']').click();
+              }
+            }   
+            var playTrack = function(index, vol){
+              var target = $('.list-wrap ul[vol=' + vol + '] li[index=' + index + ']');
+              var url =  target.attr('mp3');
+              var vol = target.parent().attr('vol');
+                if (window.LuooFm){
+                    LuooFm.play(url, vol);
+                }
+                clearInterval(updater);                
+                updater = setInterval(function(){
+                  if (!window.LuooFm) return;
+                  var status = LuooFm.getPlayingStatus();
+                  console.log(status);
+                  var statusObj = JSON.parse(status);
+                  if (statusObj["playing"] != undefined){
+                      $('.time .now').text(timeFormate(statusObj['cur']));
+                      $('.time .total').text(timeFormate(statusObj['dur']));
+                      $('.timing .played').css('width', statusObj['cur']/statusObj['dur'] * $('.timing').width());
+
+                      $('.timing .download').css('width', statusObj['downloading'] * $('.timing').width());
+                      if (statusObj['playing']){
+                          $('.controls img:eq(1)').removeClass('pause').addClass('play');
+                          $('.controls img:eq(1)')[0].src = 'images/player_play.png'; 
+                      }else{
+                          $('.controls img:eq(1)').removeClass('play').addClass('pause');
+                          $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
+                      }
+                      if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur']/10){
+                          clearInterval(updater);
+                          playNextTrack(index, vol);
+                          console.log('playNextTrack');
+                      }
+                  }
+                }, 1000);
             }
-            playList = JSON.parse(playListStr);
-            window.vol = playList["vol"];
-            console.log(playList["playList"]);               
             
-        });
+            var pauseTrack = function(){
+                LuooFm.pause();
+                clearInterval(updater);
+            }
+            $('.luoo-fm-player-body .controls img').on('mousedown touchstart', function(e){
+                $(e.currentTarget).addClass('pressed');
+                $('.luoo-fm-player-body .controls img').one('mouseup touchend', function(e){
+                    var target = $(e.currentTarget);
+                    if (target.hasClass('play')){
+                        target.removeClass('play').addClass('pause');
+                        target[0].src = 'images/player_pause.png';
+                    }else if (target.hasClass('pause')){
+                        target.removeClass('pause').addClass('play');
+                        target[0].src = 'images/player_play.png';   
+                    }
+                    $(e.currentTarget).removeClass('pressed');
+                });   
+            });
+
+            $('.logo').on('click', function(){
+                if ($('#luoo_list').css('left') == '0px'){
+                    $('#luoo_player').css('left', '0');
+                    $('#luoo_list').css('left', '100%');
+                }else{
+                    $('#luoo_player').css('left', '-100%');
+                    $('#luoo_list').css('left', '0');    
+                }                
+            });       
+
+            $('.list-wrap ul li').live('click', function(e){
+                $('.list-wrap ul li.selected').removeClass('selected');
+                var target = $(e.currentTarget);
+                target.addClass('selected');                 
+                  console.log("play~~");
+                  $('.track-info .title').text(target.text());
+                  $('.track-info .album').text(target.attr('artist'));
+                  $('.poster img')[0].src = target.attr('poster'); 
+                  playTrack(target.attr('index'), target.parent().attr('vol'));
+            });     
+
+            $('.list-wrap ul h3').live('click', function(e){
+                var target = $(e.currentTarget).parent();
+                target.find('h3 span').css('overflow', 'hidden');
+                target.find('h3 span').css('display', 'block');
+                target.toggleClass('open');
+                if (target.hasClass('open')){
+                  target.animate({
+                    height:target.height() + $(target.find('li')[0]).height() * target.find('li').length
+                  },300);
+                  target.find('h3 span').animate({
+                    textIndent:target.width() - 120 -target.find('h3 span').width()
+                  }, 300);
+                }else{
+                  target.animate({
+                    height:target.height() - $(target.find('li')[0]).height() * target.find('li').length
+                  },300);
+                   target.find('h3 span').animate({
+                    textIndent:0
+                  }, 300);
+                }                
+            });
+
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+            function onDeviceReady() { 
+                var description = '';  
+                var index = 0;
+                window.plugins.luoogetplaylist.getPlayList(0, function(result){
+                    renderVol(JSON.parse(result));
+                },
+                function(e){
+                    console.log(e);
+                });                
+            }            
+        });  
     </script>
 </head>
 <body>
-
+   <div class="luoo-fm">
+       <ul class="page" id="luoo_player">
+           <div class="luoo-fm-player-body">
+               <div class="logo"></div>
+               <div class="poster">
+                   <img src="http://www.luoo.net/wp-content/uploads/337.jpg" alt="">
+               </div>
+               <div class="track-info">
+                   <p class="title">The Vera Violets</p>
+                   <p class="album">Somewhere Else 选自《Somewhere Else》</p>
+               </div>
+               <div class="controls">
+                   <img src="images/player_rew.png" class="pre">
+                   <img src="images/player_play.png" class="play">
+                   <img src="images/player_fwd.png" class="next">
+               </div>
+               <div class="timing">
+                   <div class="download"></div>
+                   <div class="played"></div>
+                   <div class="time">
+                       <span class="now">0:00</span>
+                       <span class="total">0:00</span>
+                   </div>
+               </div>
+           </div>           
+       </ul>
+       <ul class="page" id="luoo_list">
+            <div class="logo"></div>
+            <div class="list-wrap">                
+            </div>           
+       </ul>
+   </div>
 </body>
 </html>
