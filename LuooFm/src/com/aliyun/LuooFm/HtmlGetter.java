@@ -46,15 +46,16 @@ public class HtmlGetter {
 	            }
 	        }
 	    if (strBuf.toString().endsWith("}")){
+	    		Log.d("my"," ok, send the play list");
 	    		return strBuf.toString();
 	    }else{
+	    		Log.d("my", "opps, will get it from remote");
 	    		return this.getPlayListRemote(url, file, vol);
 	    }
 		
 	}
 	public String getPlayListRemote(String url, File playListFile, String vol) throws IOException {
-		playListFile.getParentFile().mkdirs();
-		playListFile.createNewFile();
+		
 		Document doc = Jsoup.connect(url).get();
 		String volTitle = doc.select(".title a").get(0).text();
 		Element post = doc.select(".post").get(0);
@@ -66,11 +67,13 @@ public class HtmlGetter {
 			String poster = songsInfo.get(i).getElementsByTag("img").get(0).attr("src");
 			String info = songsInfo.get(i + 1).text();
 			String title = info.substring(0, info.indexOf("–"));
-			String airtist = info.substring(info.indexOf("–"), info.length());
+			String airtist = info.substring(info.indexOf("–") + 2, info.length());
 			j = j + 1;
 			playList.appendSong( j, title, airtist, poster);
 		}
 		//save list file to sdcard
+		playListFile.getParentFile().mkdirs();
+		playListFile.createNewFile();
 		FileOutputStream fos = new FileOutputStream(playListFile, true);
 		fos.write(playList.toString().getBytes());
 		fos.close();

@@ -171,16 +171,31 @@
             document.addEventListener("deviceready", onDeviceReady, false);
             function onDeviceReady() { 
                 var description = '';  
-                var index = 0;
-                window.plugins.luoogetplaylist.getPlayList(0, function(result){
-                    renderVol(JSON.parse(result));
-                    setTimeout(function(){
-                        $('.list-wrap ul:first li:first').click();
-                     }, 0)
-                },
-                function(e){
-                    console.log(e);
-                });                
+                // get the latest playlist form start to end
+                var getPlayList = function(start, end){
+                    window.plugins.luoogetplaylist.getPlayList(start, function(result){
+                        console.log(typeof(result));
+                        if (result.substr(-1) != '}'){
+                          //get play list again, if the result is not a correct json string
+                          getPlayList(start, end);
+                          return;
+                        }
+                        renderVol(JSON.parse(result));
+                        setTimeout(function(){
+                            // if player never played befor, play the first song.
+                            if ($('.list-wrap ul li.selected').length == 0){
+                                $('.list-wrap ul:first li:first').click();
+                            }                            
+                         }, 0);
+                        if (start < end){
+                            getPlayList(start + 1, end);
+                        }
+                    },
+                    function(e){
+                        console.log(e);
+                    });  
+                }
+                getPlayList(0, 4); 
             }            
         });  
     </script>
