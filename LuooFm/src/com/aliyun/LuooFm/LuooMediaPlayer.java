@@ -24,7 +24,6 @@ import android.util.Log;
 
 public class LuooMediaPlayer extends Service {
 	private static final int INTIAL_KB_BUFFER =  128*10/8;//assume 128kbps*10secs/8bits per byte
-	private MediaPlayer player;  
 	private MediaPlayer mediaPlayer;
 	private final Handler handler = new Handler();  
 	private File downloadingMediaFile;
@@ -37,32 +36,74 @@ public class LuooMediaPlayer extends Service {
 	private File destFile;
 	private int totalLength = 1;
 	private int totalBytesRead = 1;
-	private String lastPlay = "";
 	private String lastDownloading = "";
-
+	private Runnable updater;
+	private Runnable updater1;
+	private boolean downloading;
 	public LuooMediaPlayer() {
 	}
-	public void startStreaming(final String mediaUrl, File destFile) throws IOException {
+	private void initUpdater(){
+		updater = new Runnable() {  
+			public void run() {				
+				if (getMediaPlayer() == null) {  
+					//  Only create the MediaPlayer once we have the minimum buffered data  
+					if ( totalKbRead >= INTIAL_KB_BUFFER) {  
+						try {  
+							startMediaPlayer();  
+						} catch (Exception e) {  
+							Log.e(getClass().getName(), "Error copying buffered conent.", e);                  
+						}  
+					}  
+				} else{
+					try{
+						if ( mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 1000 ){  
+							//  NOTE:  The media player has stopped at the end so transfer any existing buffered data  
+								//  We test for < 1second of data because the media player can stop when there is still  
+								//  a few milliseconds of data left to play  
+								transferBufferToMediaPlayer();  
+							}			
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+							
+				}  
+			}
+		};
 		
+		updater1 = new Runnable() {   
+			public void run() {  
+				// Delete the downloaded File as it's now been transferred to the currently playing buffer file.
+				try {
+					if (!destFile.exists()){
+						destFile.getParentFile().mkdirs();
+						destFile.createNewFile();
+					}					
+					moveFile(downloadingMediaFile, destFile);
+					playLocalMedia(destFile);
+				} catch (IOException e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				downloadingMediaFile.delete();  
+				//textStreamed.setText(("Audio full loaded: " + totalKbRead + " Kb read"));  
+			}  
+		};  
+	}
+	public void startStreaming(final String mediaUrl, File destFile) throws IOException {
+			
 		/*
 		 * 如果播放不是同一首歌，则将mediaPlayer清空
 		 */
-		if (!lastDownloading.equals(mediaUrl)){
-			if (this.mediaPlayer != null) this.mediaPlayer.release();
+		if (!lastDownloading.equals(mediaUrl) && this.downloading){
+			this.isInterrupted = true;
+		}
+		if (this.mediaPlayer != null) {
+			this.mediaPlayer.stop();
+			this.mediaPlayer.release();
 			this.mediaPlayer = null;
 		}
+		
 		lastDownloading = mediaUrl;
-		
-		/*
-		 * 如果下载线程仍在，则设置标志先停止掉当前下载。
-		 */
-		this.isInterrupted = false;
-		if (this.playerThread != null){
-			if (this.playerThread.isAlive()){
-				this.isInterrupted = true;
-			}
-		}
-		
 	    this.destFile = destFile;
 		r = new Runnable() {     
 			public void run() {     
@@ -70,10 +111,14 @@ public class LuooMediaPlayer extends Service {
 					downloadAudioIncrement(mediaUrl);  
 				} catch (IOException e) {  
 					Log.e(getClass().getName(), "Unable to initialize the MediaPlayer for fileUrl=" + mediaUrl, e);  
-					return;  
 				}     
 			}     
 		};     
+		
+	
+		this.handler.removeCallbacks(updater);
+		this.handler.removeCallbacks(updater1);
+		initUpdater();
 		playerThread = new Thread(r);  
 		playerThread.start();
 	}  
@@ -102,6 +147,7 @@ public class LuooMediaPlayer extends Service {
 		byte buf[] = new byte[16384];  
 		totalBytesRead = 0;  
 		do {  
+			this.downloading = true;
 			int numread = stream.read(buf);     
 			if (numread <= 0)     
 				break;     
@@ -110,9 +156,9 @@ public class LuooMediaPlayer extends Service {
 			totalBytesRead += numread;  
 			totalKbRead = totalBytesRead/1000;
 			testMediaBuffer();  
-			fireDataLoadUpdate();  
 		} while (validateNotInterrupted());     
 		stream.close();  
+		this.downloading = false;
 		if (totalBytesRead == totalLength) {
 			fireDataFullyLoaded();  
 		}  
@@ -121,39 +167,13 @@ public class LuooMediaPlayer extends Service {
 		File file = new File(Environment.getExternalStorageDirectory() + "/LuooFm/download/");
 		this.deleteDirectory(file);
 	}
+	
 	private void testMediaBuffer() {
-		// TODO Auto-generated method stub
-		Runnable updater = new Runnable() {  
-			public void run() {  
-				if (mediaPlayer == null) {  
-					//  Only create the MediaPlayer once we have the minimum buffered data  
-					if ( totalKbRead >= INTIAL_KB_BUFFER) {  
-						try {  
-							startMediaPlayer();  
-						} catch (Exception e) {  
-							Log.e(getClass().getName(), "Error copying buffered conent.", e);                  
-						}  
-					}  
-				} else{
-					if ( mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 1000 ){  
-					//  NOTE:  The media player has stopped at the end so transfer any existing buffered data  
-						//  We test for < 1second of data because the media player can stop when there is still  
-						//  a few milliseconds of data left to play  
-						transferBufferToMediaPlayer();  
-					}					
-				}  
-			}
-
-
-		};  
+		// TODO Auto-generated method stub		  
 		handler.post(updater);  
 	}   
-	private boolean validateNotInterrupted() {  
+	private boolean validateNotInterrupted() {
 		if (isInterrupted) {  
-			if (mediaPlayer != null) {  
-				mediaPlayer.pause();  
-				//mediaPlayer.release();  
-			}  
 			this.isInterrupted = false;
 			return false;  
 		} else {  
@@ -163,44 +183,32 @@ public class LuooMediaPlayer extends Service {
 	private void startMediaPlayer() {  
 		try {     
 			File bufferedFile = new File(this.getCacheDir(),"playingMedia" + (counter++) + ".dat");  
-
+			Log.d("my", "start media player");
 			// We double buffer the data to avoid potential read/write errors that could happen if the   
 			// download thread attempted to write at the same time the MediaPlayer was trying to read.  
 			// For example, we can't guarantee that the MediaPlayer won't open a file for playing and leave it locked while   
 			// the media is playing.  This would permanently deadlock the file download.  To avoid such a deadloack,   
 			// we move the currently loaded data to a temporary buffer file that we start playing while the remaining   
 			// data downloads.    
-			moveFile(downloadingMediaFile,bufferedFile);  
-			
+			moveFile(downloadingMediaFile, bufferedFile);  			
 			mediaPlayer = createMediaPlayer(bufferedFile);  
 			mediaPlayer.seekTo(0);
 			// We have pre-loaded enough content and started the MediaPlayer so update the buttons & progress meters.  
 			mediaPlayer.start();  
-			startPlayProgressUpdater();              
 		} catch (IOException e) {  
 			Log.e(getClass().getName(), "Error initializing the MediaPlayer.", e);  
-			return;  
 		}     
 	}  
-
-	public void startPlayProgressUpdater() {  
-//		float progress = (((float)mediaPlayer.getCurrentPosition()/1000)/mediaLengthInSeconds); 
-		if (mediaPlayer != null) return;
-		if (mediaPlayer.isPlaying()) {  
-			Runnable notification = new Runnable() {  
-				public void run() {  
-					startPlayProgressUpdater();  
-				}  
-			};  
-			handler.postDelayed(notification, 1000);  
-		}  
-	}     
 	
 	public String getPlayingStatus() {
-		MediaPlayer temp = this.getMediaPlayer();
-		if (temp != null){
-			return "{\"cur\":" + temp.getCurrentPosition() + ", \"dur\":" + temp.getDuration() + ", \"playing\":" + temp.isPlaying() + ", \"downloading\":" + (1.0 * this.totalBytesRead/this.totalLength)+ "}";
-		}else{
+		try{
+			if (this.mediaPlayer != null){
+				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + ", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + this.mediaPlayer.isPlaying() + ", \"downloading\":" + (1.0 * this.totalBytesRead/this.totalLength)+ "}";
+			}else{
+				return "{}";
+			}		
+		}catch(Exception e){
+			e.printStackTrace();
 			return "{}";
 		}						
 	}
@@ -258,57 +266,31 @@ public class LuooMediaPlayer extends Service {
 		}  
 	}  
 
-	public MediaPlayer getPlayer() {  
-		return this.player;  
-	}  
 	public MediaPlayer getMediaPlayer() {  
 		return this.mediaPlayer;  
 	}  
 
-	private void fireDataLoadUpdate() {  
-		Runnable updater = new Runnable() {  
-			public void run() {  
-				//textStreamed.setText((totalKbRead + " Kb read"));  
-//				float loadProgress = ((float)totalKbRead/(float)mediaLengthInKb);  
-				//progressBar.setSecondaryProgress((int)(loadProgress*100));  
-			}  
-		};  
-		handler.post(updater);  
-	}
+
 	private void fireDataFullyLoaded() {  
-		Runnable updater = new Runnable() {   
-			public void run() {  
-				transferBufferToMediaPlayer();  
-				// Delete the downloaded File as it's now been transferred to the currently playing buffer file.
-				try {
-					if (!destFile.exists()){
-						destFile.getParentFile().mkdirs();
-						destFile.createNewFile();
-					}					
-					moveFile(downloadingMediaFile, destFile);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				downloadingMediaFile.delete();  
-				//textStreamed.setText(("Audio full loaded: " + totalKbRead + " Kb read"));  
-			}  
-		};  
-		handler.post(updater);  
+		
+		handler.post(updater1);  
 	}  
 	public void playLocalMedia(File destFile) throws IOException{
 		Log.d("my", "Play local file" + destFile.getAbsolutePath());
+		int currentDuratition  = 0;
 		if (mediaPlayer != null ){
 			mediaPlayer.pause(); 
+			currentDuratition = mediaPlayer.getCurrentPosition();
 		}		 
 		// Create a new MediaPlayer rather than try to re-prepare the prior one.  
 		mediaPlayer = createMediaPlayer(destFile);
-		mediaPlayer.seekTo(0);  
+		mediaPlayer.seekTo(currentDuratition);  
 		mediaPlayer.start();
 	}
 	private void transferBufferToMediaPlayer() {  
 		try {  
-			// First determine if we need to restart the player after transferring data...e.g. perhaps the user pressed pause  
+			// First determine if we need to restart the player after transferring data...e.g. perhaps the user pressed pause 
+			MediaPlayer mediaPlayer = this.getMediaPlayer();
 			boolean wasPlaying = mediaPlayer.isPlaying();  
 			int curPosition = mediaPlayer.getCurrentPosition();  
 			// Copy the currently downloaded content to a new buffered File.  Store the old File for deleting later.   
@@ -337,6 +319,7 @@ public class LuooMediaPlayer extends Service {
 	
 	public void play() throws Exception {  
 		try {
+			MediaPlayer mediaPlayer = this.getMediaPlayer();
 			mediaPlayer.seekTo(mediaPlayer.getCurrentPosition());
 			mediaPlayer.start();   
 		} catch (Exception e) {  
@@ -383,16 +366,13 @@ public class LuooMediaPlayer extends Service {
 //		this.mediaPlayer.release();
 //		this.player.release();
 		this.flushCacheFiles();
-		if (this.mediaPlayer != null){
+		MediaPlayer mediaPlayer = this.getMediaPlayer();
+		if (mediaPlayer != null){
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
 		}
-		if (this.player != null){
-			player.stop();
-			player.release();			
-			player = null;
-		}
+		
 	}  
 	
 
