@@ -38,10 +38,13 @@ public class LuooFm {
 		String fileEx = url.substring(url.lastIndexOf(".") + 1, url.length()).toLowerCase(); 
 	    String fileNa = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".")); 
 		File destFile = new File(sdCardDir, fileNa + "." + fileEx);  
-		if (destFile.exists()) {			
-			this.luooPlayerService.playLocalMedia(destFile);
+		if (destFile.exists()) {
+			Log.d("my", "play locally");
+			this.luooPlayerService.playLocalMedia(destFile, 0);
 		}else{			
+			Log.d("my", "play at remote");
 			this.luooPlayerService.startStreaming(url, destFile);
+			
 		}
 		
 	}

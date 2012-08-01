@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
-    <title>Player</title>
-    <link href='css/Chivo.css' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="css/demo.css">
-    <script type="text/javascript" src="js/phonegap.js"></script>
-    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/iscroll.js"></script>
-    <script type="text/javascript" src="js/myplaylist.js"></script>
-    <script type="text/javascript">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
+  <title>Player</title>
+  <link href='css/Chivo.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="css/demo.css">
+  <script type="text/javascript" src="js/phonegap.js"></script>
+  <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="js/iscroll.js"></script>
+  <script type="text/javascript" src="js/myplaylist.js"></script>
+  <script type="text/javascript">
         $(document).ready(function(){
              var updater;
              var currentTrack;
-           
+             var control = "play";           
             /*
             * 将拿到的播放列表渲染到列表页面，基本信息写在li元素里面，单击的时候，直接获取这些信息送入后台
             */
@@ -71,8 +71,9 @@
               var vol = target.parent().attr('vol');
                 if (window.LuooFm){
                     LuooFm.play(url, vol);
+                    control = "play";
                 }
-                 $('.time .now').text(timeFormate(0));
+                $('.time .now').text(timeFormate(0));
                 $('.time .total').text(timeFormate(0));
                 $('.timing .played').css('width', 0);
                 $('.timing .download').css('width', 0);
@@ -84,20 +85,22 @@
                   if (!window.LuooFm) return;
                   var status = LuooFm.getPlayingStatus();
                   var statusObj = JSON.parse(status);
+                  console.log(status);
                   if (statusObj["playing"] != undefined){
                       $('.time .now').text(timeFormate(statusObj['cur']));
                       $('.time .total').text(timeFormate(statusObj['dur']));
                       $('.timing .played').css('width', statusObj['cur']/statusObj['dur'] * $('.timing').width());
 
-                      $('.timing .download').css('width', statusObj['downloading'] * $('.timing').width());
+                        $('.timing .download').css('width', statusObj['downloading'] * $('.timing').width());
                       if (statusObj['playing']){
                           $('.controls img:eq(1)').removeClass('pause').addClass('play');
                           $('.controls img:eq(1)')[0].src = 'images/player_play.png'; 
                       }else{
                           $('.controls img:eq(1)').removeClass('play').addClass('pause');
                           $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
+                         
                       }
-                      if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur'] - 1000){
+                      if (statusObj['downloading'] >= 1 && (statusObj['cur'] >= statusObj['dur'] - 1000 || !statusObj['playing'])){
                           clearInterval(updater);
                           playNextTrack(index, vol);
                           console.log('playNextTrack');
@@ -117,8 +120,9 @@
             $('.luoo-fm-player-body .controls .play').live('click', function(e){
                 var target = $(e.currentTarget);
                 if (LuooFm) {
-                  LuooFm.pause();
-                  console.log('now will be pause');
+                    LuooFm.pause();
+                    console.log('now will be pause');
+                    control = "pause";
                    target.removeClass('play').addClass('pause');
                    target[0].src = 'images/player_pause.png';
                 }
@@ -127,12 +131,12 @@
               var target = $(e.currentTarget);
                 if (LuooFm) {
                   LuooFm.play();
+                  control = "play";
                   console.log("now will be paly");
                   target.removeClass('pause').addClass('play');
                   target[0].src = 'images/player_play.png'; 
                 } 
             });
-
             $('.luoo-fm-player-body .controls .pre').on('click', function(e){
                   var index = $('.list-wrap ul li.selected').attr('index');
                   var vol = $('.list-wrap ul li.selected').parent().attr('vol');
@@ -225,6 +229,7 @@
                         setTimeout(function(){
                             // if player never played befor, play the first song.
                             if ($('.list-wrap ul li.selected').length == 0){
+                                control = "play";
                                 $('.list-wrap ul:first li:first').click();
                             }                            
                          }, 0);
@@ -242,40 +247,36 @@
                 getPlayList(0, 4); 
             }            
         });  
-    </script>
-</head>
+    </script></head>
 <body>
-   <div class="luoo-fm">
-       <ul class="page" id="luoo_player">
-           <div class="luoo-fm-player-body">
-               <div class="logo"></div>
-               <div class="poster">
-                   <img src="http://www.luoo.net/wp-content/uploads/337.jpg" alt="">
-               </div>
-               <div class="track-info">
-                   <p class="title">The Vera Violets</p>
-                   <p class="album">Somewhere Else 选自《Somewhere Else》</p>
-               </div>
-               <div class="controls">
-                   <img src="images/player_rew.png" class="pre">
-                   <img src="images/player_play.png" class="play">
-                   <img src="images/player_fwd.png" class="next">
-               </div>
-               <div class="timing">
-                   <div class="download"></div>
-                   <div class="played"></div>
-                   <div class="time">
-                       <span class="now">0:00</span>
-                       <span class="total">0:00</span>
-                   </div>
-               </div>
-           </div>           
-       </ul>
-       <ul class="page" id="luoo_list">
-            <div class="logo"></div>
-            <div class="list-wrap">                
-            </div>           
-       </ul>
-   </div>
+  <div class="luoo-fm">
+    <ul class="page" id="luoo_player">
+      <div class="luoo-fm-player-body">
+        <div class="logo"></div>
+        <div class="poster">
+          <img src="http://www.luoo.net/wp-content/uploads/337.jpg" alt=""></div>
+        <div class="track-info">
+          <p class="title">The Vera Violets</p>
+          <p class="album">Somewhere Else 选自《Somewhere Else》</p>
+        </div>
+        <div class="controls">
+          <img src="images/player_rew.png" class="pre">
+          <img src="images/player_play.png" class="play">
+          <img src="images/player_fwd.png" class="next"></div>
+        <div class="timing">
+          <div class="download"></div>
+          <div class="played"></div>
+          <div class="time">
+            <span class="now">0:00</span>
+            <span class="total">0:00</span>
+          </div>
+        </div>
+      </div>
+    </ul>
+    <ul class="page" id="luoo_list">
+      <div class="logo"></div>
+      <div class="list-wrap"></div>
+    </ul>
+  </div>
 </body>
 </html>

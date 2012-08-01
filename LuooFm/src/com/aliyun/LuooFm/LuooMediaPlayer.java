@@ -113,8 +113,6 @@ public class LuooMediaPlayer extends Service {
 				}     
 			}     
 		};     
-		
-	
 		this.handler.removeCallbacks(updater);
 		this.handler.removeCallbacks(updater1);
 		initUpdater();
@@ -145,6 +143,7 @@ public class LuooMediaPlayer extends Service {
 		FileOutputStream out = new FileOutputStream(downloadingMediaFile);     
 		byte buf[] = new byte[16384];  
 		totalBytesRead = 0;  
+		Log.d("my", "begin download ");
 		do {  
 			this.downloading = true;
 			int numread = stream.read(buf);     
@@ -156,7 +155,6 @@ public class LuooMediaPlayer extends Service {
 			totalKbRead = totalBytesRead/1000;
 			testMediaBuffer();  
 		} while (validateNotInterrupted());     
-		
 		this.downloading = false;
 		if (totalBytesRead == totalLength) {
 			fireDataFullyLoaded();  
@@ -274,7 +272,17 @@ public class LuooMediaPlayer extends Service {
 
 	private void fireDataFullyLoaded() { 
 		handler.post(updater1);  
-	}  
+	} 
+	public void playLocalMedia(File destFile, int seek) throws IOException{
+		Log.d("my", "Play local file" + destFile.getAbsolutePath());
+		if (mediaPlayer != null ){
+			mediaPlayer.pause(); 
+		}		 
+		// Create a new MediaPlayer rather than try to re-prepare the prior one.  
+		mediaPlayer = createMediaPlayer(destFile);
+		mediaPlayer.seekTo(seek);  
+		mediaPlayer.start();
+	}
 	public void playLocalMedia(File destFile) throws IOException{
 		Log.d("my", "Play local file" + destFile.getAbsolutePath());
 		int currentDuratition  = 0;
