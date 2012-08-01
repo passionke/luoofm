@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 
 *.dex
 LuooFm\bin\*
 LuooFM\gen\*
+=======
+
+*.dex
+*/LuooFm/bin/*
+*/LuooFm/gen/*
+>>>>>>> draf
