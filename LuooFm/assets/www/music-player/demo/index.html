@@ -14,14 +14,19 @@
         $(document).ready(function(){
              var updater;
              var currentTrack;
-             var control = "play";           
+             var control = "play";    
+             var lock = false; //iscroll滑动过程中，click事件不被触发 
+              var test = '{"title":"VOL.386 Sex, Drugs, and Rock ‘n Roll","cover":"http://www.luoo.net/wp-content/uploads/386.jpg","vol":"386","playList":[{"mp3":"http://ftp.luoo.net/radio/radio386/01.mp3", "title":"01.EVO ", "artist":"– Requiem for a Dream (Clint Mansell cover) 选自《На Краю Вселенной》","cover":"http://www.luoo.net/wp-content/uploads/cover_467323.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/02.mp3", "title":"02.Nachtmahr ", "artist":"– Rise and Fall (Patrick Damiani Remix) 选自《Can You Feel the Beat?》","cover":"http://img1.douban.com/lpic/s6974331.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/03.mp3", "title":"03.Funker Vogt ", "artist":"– Cold War 选自《Maschine Zeit》","cover":"http://img3.douban.com/lpic/s1504918.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/04.mp3", "title":"04.Terminal Choice ", "artist":"– Keine Macht 选自《Übermacht》","cover":"http://img1.douban.com/lpic/s4190852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/05.mp3", "title":"05.Noisuf-X ", "artist":"– Please Hang Up 选自《Excessive Exposure》","cover":"http://img1.douban.com/lpic/s4214624.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/06.mp3", "title":"06.Psyclon Nine ", "artist":"– We The Fallen 选自《We The Fallen》","cover":"http://img3.douban.com/lpic/s3935157.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/07.mp3", "title":"07.Blue Stahli ", "artist":"– Overklock 选自《Antisleep, Vol. 01》","cover":"http://img3.douban.com/lpic/s4460407.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/08.mp3", "title":"08.Velvet Acid Christ ", "artist":"– Black Rainbows 选自《The Art Of Breaking Apart》","cover":"http://img3.douban.com/lpic/s4048876.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/09.mp3", "title":"09.XMH ", "artist":"– Tears In Rain 选自《State Of Mind》","cover":"http://img1.douban.com/lpic/s4358944.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/10.mp3", "title":"10.Rammstein; Northern Lite ", "artist":"– Rosenrot (Northern Lite Remix) 选自《Rosenrot》","cover":"http://img1.douban.com/lpic/s3912724.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/11.mp3", "title":"11.Otto Dix ", "artist":"– Зона Теней 选自《Зона Теней》","cover":"http://img1.douban.com/lpic/s3692964.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/12.mp3", "title":"12.Unheilig;Xavier Naidoo ", "artist":"– Zeitreise 选自《Lichter der Stadt》","cover":"http://img5.douban.com/lpic/s8901929.jpg"}]}';
+       
             /*
             * 将拿到的播放列表渲染到列表页面，基本信息写在li元素里面，单击的时候，直接获取这些信息送入后台
             */
+           
              var renderVol = function(vol){
                  var playListHtml = ' <ul vol="' + vol["vol"] + '"><h3><span>' + vol["title"] + '</span></h3>';
                  var playList = vol["playList"];
                  var tracks = '';
+                
                  for (var i = 0; i < playList.length; i++){
                     tracks = '<li index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
                     playListHtml += tracks;
@@ -32,6 +37,7 @@
              /*
              将毫秒数转换成分秒格式，显示在播放器页面             
               */
+              
             var timeFormate = function(ms) {
               var seconds = Math.floor(ms/1000);
               var minute = Math.floor(seconds/60);
@@ -85,13 +91,12 @@
                   if (!window.LuooFm) return;
                   var status = LuooFm.getPlayingStatus();
                   var statusObj = JSON.parse(status);
-                  console.log(status);
+     
                   if (statusObj["playing"] != undefined){
                       $('.time .now').text(timeFormate(statusObj['cur']));
                       $('.time .total').text(timeFormate(statusObj['dur']));
                       $('.timing .played').css('width', statusObj['cur']/statusObj['dur'] * $('.timing').width());
-
-                        $('.timing .download').css('width', statusObj['downloading'] * $('.timing').width());
+                      $('.timing .download').css('width', statusObj['downloading'] * $('.timing').width());
                       if (statusObj['playing']){
                           $('.controls img:eq(1)').removeClass('pause').addClass('play');
                           $('.controls img:eq(1)')[0].src = 'images/player_play.png'; 
@@ -100,10 +105,15 @@
                           $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
                          
                       }
-                      if (statusObj['downloading'] >= 1 && (statusObj['cur'] >= statusObj['dur'] - 1000 || !statusObj['playing'])){
-                          clearInterval(updater);
-                          playNextTrack(index, vol);
-                          console.log('playNextTrack');
+                      /*
+                      在2秒时，加入播放下一曲的任务，不过任务延迟2秒进行。因为当前播放时间与音乐时间并不是严格相等。
+                       */
+                      if (statusObj['downloading'] >= 1 && (statusObj['cur'] >= statusObj['dur'] - 2000 || !statusObj['playing'])){
+                          setTimeout(function(){
+                              clearInterval(updater);
+                              playNextTrack(index, vol);
+                              console.log('playNextTrack');
+                          }, 4000);
                       }
                   }
                 }, 1000);
@@ -161,23 +171,41 @@
             播放界面，列表界面切换
              */
             $('.logo').on('click', function(){
+               var wid = $('.luoo-fm').width();
+               console.log(wid);
                 if ($('#luoo_list').css('left') == '0px'){
                     $('#luoo_player').show();
                     $('#luoo_list').show();
-                    $('#luoo_player').css('left', '0');
-                    $('#luoo_list').css('left', '100%');
-                    
+                   
+                    $('#luoo_player').css('left', -wid);
+                    $('#luoo_player').animate({
+                      left:0
+                    }, 300);
+                    $('#luoo_list').animate({
+                      left:wid
+                    },300, function(){
+                       $('#luoo_list').hide();
+                    })
+                   
                 }else{
                     $('#luoo_player').show();
                     $('#luoo_list').show();
-                    $('#luoo_player').css('left', '-100%');
-                    $('#luoo_list').css('left', '0');
+                    $('#luoo_list').css('left', wid);
+                    $('#luoo_player').animate({
+                      left:-wid
+                    }, 300);
+                    $('#luoo_list').animate({
+                      left:0
+                    },300, function(){
+                       $('#luoo_player').hide();
+                    });                   
                     
                 }                
             });
 
             //播放列表曲目点击。播放之
             $('.list-wrap ul li').live('click', function(e){
+              if (lock) return;
                 $('.list-wrap ul li.selected').removeClass('selected');
                 var target = $(e.currentTarget);
                 target.addClass('selected');                 
@@ -192,6 +220,7 @@
             单期点击收放动作
              */
             $('.list-wrap ul h3').live('click', function(e){
+              if (lock) return;
                 var target = $(e.currentTarget).parent();
                 target.find('h3 span').css('overflow', 'hidden');
                 target.find('h3 span').css('display', 'block');
@@ -201,7 +230,7 @@
                     height:target.height() + $(target.find('li')[0]).height() * target.find('li').length
                   },400);
                   target.find('h3 span').animate({
-                    textIndent:target.width() - 80 -target.find('h3 span').width()
+                    textIndent:target.width() - 104 -target.find('h3 span').width()
                   }, 400);
                 }else{
                   target.animate({
@@ -216,6 +245,8 @@
             /*
             phonegap加载完毕之后，通过插件获取播放列表，插件代码配置在myplaylist.js
              */
+            
+            
             document.addEventListener("deviceready", onDeviceReady, false);
             function onDeviceReady() { 
                 // get the latest playlist form start to end
@@ -226,18 +257,23 @@
                           return;
                         }
                         renderVol(JSON.parse(result));
-                        setTimeout(function(){
+                         setTimeout(function(){
                             // if player never played befor, play the first song.
                             if ($('.list-wrap ul li.selected').length == 0){
                                 control = "play";
                                 $('.list-wrap ul:first li:first').click();
-                            }                            
+                                $('.list-wrap li.selected').parent().click();
+                                $('#wrapper').height($('.luoo-fm').height() - $('.luoo-fm .logo').height());
+                                 new iScroll('wrapper', {
+                                    checkDOMChanges:true,
+                                    snap:'ul'
+                                  });
+                             }                            
                          }, 0);
                         if (start < end){
                             getPlayList(start + 1, end);
                         }
-                    },
-                    function(e){
+                    },function(e){
                         console.log(e);
                         //get play list again, if something wrong was happend
                         getPlayList(start, end); 
@@ -245,8 +281,9 @@
                     });  
                 }
                 getPlayList(0, 4); 
-            }            
-        });  
+            }
+                     
+         });  
     </script></head>
 <body>
   <div class="luoo-fm">
@@ -275,7 +312,9 @@
     </ul>
     <ul class="page" id="luoo_list">
       <div class="logo"></div>
-      <div class="list-wrap"></div>
+      <div id="wrapper">
+        <div class="list-wrap"></div>
+      </div>
     </ul>
   </div>
 </body>

@@ -11,7 +11,7 @@
 
 *.class
 
-LuooFm/bin/AndroidManifest.xml
+LuooFm/bin/*
 
 LuooFm/assets/www/music-player/.DS_Store
 

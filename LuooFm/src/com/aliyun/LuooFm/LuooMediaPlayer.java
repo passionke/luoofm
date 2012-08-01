@@ -150,7 +150,6 @@ public class LuooMediaPlayer extends Service {
 			if (numread <= 0)     
 				break;     
 			out.write(buf, 0, numread);  
-			Log.d("download", "downloaded " + totalBytesRead);
 			totalBytesRead += numread;  
 			totalKbRead = totalBytesRead/1000;
 			testMediaBuffer();  

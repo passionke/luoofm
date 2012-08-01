@@ -3,6 +3,10 @@
     color: rgba(0,0,0,0);
     background: rgba(0,0,0,0);
 }
+
+* { 
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+} 
 html { overflow-y: scroll; }
 
 body {
@@ -20,7 +24,6 @@ body {
     overflow: hidden;
     display: block;
     scroll:none;
-    background: url('../images/bg.png') 0 0 no-repeat;
 }
 .luoo-fm ul.page{
     width:100%;
@@ -28,10 +31,10 @@ body {
     margin: 0;
     padding: 0;
     position: absolute;
-    -webkit-transition:left 0.4s ease-in;
 }
 #luoo_list {
     left:100%;
+    display: none;
 }
 .luoo-fm ul.page .luoo-fm-player-body {
     width:350px;
@@ -129,6 +132,8 @@ body {
 
 #luoo_list .list-wrap {
     margin: 20px;
+    margin-bottom: 0;
+    margin-top: 0;
     background-color:rgba(33, 33, 33, 0.5);    
 }
 .list-wrap > ul {
