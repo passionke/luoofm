@@ -151,7 +151,6 @@ public class LuooMediaPlayer extends Service {
 				break;     
 			out.write(buf, 0, numread);  
 			totalBytesRead += numread;  
-			totalKbRead = totalBytesRead/1000;
 			testMediaBuffer();  
 		} while (validateNotInterrupted());     
 		this.downloading = false;
@@ -173,6 +172,7 @@ public class LuooMediaPlayer extends Service {
 	private boolean validateNotInterrupted() {
 		if (isInterrupted) {  
 			this.isInterrupted = false;
+			this.totalBytesRead = 0;
 			return false;  
 		} else {  
 			return true;  
@@ -201,7 +201,7 @@ public class LuooMediaPlayer extends Service {
 	public String getPlayingStatus() {
 		try{
 			if (this.mediaPlayer != null){
-				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + ", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + this.mediaPlayer.isPlaying() + ", \"downloading\":" + (1.0 * this.totalBytesRead/this.totalLength)+ "}";
+				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + ", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + this.mediaPlayer.isPlaying() + ", \"downloading\":" + (1.0 * this.totalBytesRead/this.totalLength>=1?1:this.totalBytesRead/this.totalLength)+ "}";
 			}else{
 				return "{}";
 			}		

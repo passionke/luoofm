@@ -61,6 +61,7 @@
             最末歌曲的下一首将播放本期的第一首歌曲
              */
             var playNextTrack = function(index, vol)  {
+              console.log('now index and vol  ' + index + 'he  ' + vol);
               var par = $('.list-wrap ul[vol=' + vol + ']');
               if (parseInt(index) == par.find('li').length - 1){
                   par.find('li:first').click();
@@ -122,14 +123,18 @@
             暂停播放
              */
             var pauseTrack = function(){
-                LuooFm.pause();
+              if (widow.LuooFm){
                 clearInterval(updater);
+                LuooFm.pause();
+                
+              }
+                
             }
             
 
             $('.luoo-fm-player-body .controls .play').live('click', function(e){
                 var target = $(e.currentTarget);
-                if (LuooFm) {
+                if (window.LuooFm) {
                     LuooFm.pause();
                     console.log('now will be pause');
                     control = "pause";
@@ -139,7 +144,7 @@
             });
             $('.luoo-fm-player-body .controls .pause').live('click', function(e){
               var target = $(e.currentTarget);
-                if (LuooFm) {
+                if (window.LuooFm) {
                   LuooFm.play();
                   control = "play";
                   console.log("now will be paly");
@@ -246,6 +251,13 @@
             phonegap加载完毕之后，通过插件获取播放列表，插件代码配置在myplaylist.js
              */
             
+            renderVol(JSON.parse(test));
+
+            renderVol(JSON.parse(test));
+
+            renderVol(JSON.parse(test));
+
+            renderVol(JSON.parse(test));
             
             document.addEventListener("deviceready", onDeviceReady, false);
             function onDeviceReady() { 
