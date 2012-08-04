@@ -1,6 +1,7 @@
 package com.aliyun.LuooFm;
 
 import com.phonegap.DroidGap;
+import com.phonegap.luoo.plugin.LuooMediaPlayerService;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -15,29 +16,26 @@ import android.view.WindowManager;
 @SuppressLint("SetJavaScriptEnabled")
 public class EntranceActivity extends DroidGap {
 	/** Called when the activity is first created. */
-	public LuooMediaPlayer luooPlayerService;
+	public static LuooMediaPlayerService luooPlayerService;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setFullscreen();   
 		super.loadUrl("file:///android_asset/www/music-player/demo/index.html");
-		appView.getSettings().setJavaScriptEnabled(true); 
+		//appView.getSettings().setJavaScriptEnabled(true); 
 		bindPlayerService();
-		appView.addJavascriptInterface(new LuooFm(EntranceActivity.this), "LuooFm"); 
+		//appView.addJavascriptInterface(new LuooFm(EntranceActivity.this), "LuooFm"); 
 	}
 	
-	public LuooMediaPlayer getLuooMediaPlayer(){
-		return this.luooPlayerService;
+	public static LuooMediaPlayerService getLuooMediaPlayer(){
+		return luooPlayerService;
 	}
 
 	private ServiceConnection mServiceConnection = new ServiceConnection() {  
 		public void onServiceConnected(ComponentName name, IBinder service) {  
 			// TODO Auto-generated method stub  
-			luooPlayerService = ((LuooMediaPlayer.LocalBinder)service).getService();  
+			luooPlayerService = ((LuooMediaPlayerService.LocalBinder)service).getService();  
 		}  
-
-
-
 		public void onServiceDisconnected(ComponentName name) {  
 			// TODO Auto-generated method stub 
 			//        		1luooPlayerService.onDestroy();
@@ -48,7 +46,7 @@ public class EntranceActivity extends DroidGap {
 	private Intent i;  
 	public void bindPlayerService() {
 		i  = new Intent();  
-		i.setClass(this, LuooMediaPlayer.class);       
+		i.setClass(this, LuooMediaPlayerService.class);       
 		// EntranceActivity.this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
 		this.bindService(i, this.mServiceConnection, BIND_AUTO_CREATE);
 	}
@@ -63,6 +61,6 @@ public class EntranceActivity extends DroidGap {
 		Log.d("my", "opps");
 		super.onDestroy();
 		this.unbindService(mServiceConnection);
-		this.stopService(new Intent().setClass(this, LuooMediaPlayer.class));
+		this.stopService(new Intent().setClass(this, LuooMediaPlayerService.class));
 	}
 }

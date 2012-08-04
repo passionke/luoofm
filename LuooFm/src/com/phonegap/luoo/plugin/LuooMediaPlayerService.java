@@ -1,4 +1,4 @@
-package com.aliyun.LuooFm;
+package com.phonegap.luoo.plugin;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -21,7 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-public class LuooMediaPlayer extends Service {
+public class LuooMediaPlayerService extends Service {
 	private static final int INTIAL_KB_BUFFER =  128*10/8;//assume 128kbps*10secs/8bits per byte
 	private MediaPlayer mediaPlayer;
 	private final Handler handler = new Handler();  
@@ -39,10 +39,16 @@ public class LuooMediaPlayer extends Service {
 	private Runnable updater;
 	private Runnable updater1;
 	private boolean downloading;
-	public LuooMediaPlayer() {
+	private int lastKbRead = 0;
+	private FileInputStream fis;
+	
+	
+	public LuooMediaPlayerService() {
 	}
 	private void initUpdater(){
 		updater = new Runnable() {  
+			
+
 			public void run() {				
 				if (getMediaPlayer() == null) {  
 					//  Only create the MediaPlayer once we have the minimum buffered data  
@@ -55,11 +61,13 @@ public class LuooMediaPlayer extends Service {
 					}  
 				} else{
 					try{
-						if ( mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 1000 ){  
+						if ( mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 1000 || !mediaPlayer.isPlaying()
+								&& (totalKbRead - lastKbRead) > INTIAL_KB_BUFFER ){  
 							//  NOTE:  The media player has stopped at the end so transfer any existing buffered data  
 								//  We test for < 1second of data because the media player can stop when there is still  
 								//  a few milliseconds of data left to play  
 								transferBufferToMediaPlayer();  
+								lastKbRead = totalKbRead;
 							}			
 					}catch(Exception e){
 						e.printStackTrace();
@@ -84,7 +92,13 @@ public class LuooMediaPlayer extends Service {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				downloadingMediaFile.delete();  
+				downloadingMediaFile.delete(); 
+				for (int i = 0; i < counter; i++ ){
+					File bufferedFile = new File(getCacheDir(),"playingMedia" + i + ".dat");  
+					if (bufferedFile.exists()) bufferedFile.delete();
+				}
+				counter = 0;
+				
 				//textStreamed.setText(("Audio full loaded: " + totalKbRead + " Kb read"));  
 			}  
 		};  
@@ -93,8 +107,11 @@ public class LuooMediaPlayer extends Service {
 		/*
 		 * 如果播放不是同一首歌，则将mediaPlayer清空,如果播放的不是同一首歌，并且前一首还在下载中，设置标志位为true。终止上次下载。
 		 */
-		if (!lastDownloading.equals(mediaUrl) && this.downloading){
+		if (this.lastDownloading.equals(mediaUrl)) return;
+		this.isInterrupted = false;
+		if (this.downloading){
 			this.isInterrupted = true;
+			Log.d("my", "now plya" + mediaUrl + "cancel befor downloading");
 		}
 		if (this.mediaPlayer != null) {
 			this.mediaPlayer.stop();
@@ -132,7 +149,6 @@ public class LuooMediaPlayer extends Service {
 			Log.e("my", "Unable to create InputStream for mediaUrl:" + mediaUrl);  
 		}  
 		downloadingMediaFile = new File(this.getCacheDir(),"downloadingMedia.dat");  
-
 		// Just in case a prior deletion failed because our code crashed or something, we also delete any previously   
 		// downloaded file to ensure we start fresh.  If you use this code, always delete   
 		// no longer used downloads else you'll quickly fill up your hard disk memory.  Of course, you can also   
@@ -150,7 +166,8 @@ public class LuooMediaPlayer extends Service {
 			if (numread <= 0)     
 				break;     
 			out.write(buf, 0, numread);  
-			totalBytesRead += numread;  
+			totalBytesRead += numread;
+			this.totalKbRead = this.totalBytesRead/1024;
 			testMediaBuffer();  
 		} while (validateNotInterrupted());     
 		this.downloading = false;
@@ -172,7 +189,6 @@ public class LuooMediaPlayer extends Service {
 	private boolean validateNotInterrupted() {
 		if (isInterrupted) {  
 			this.isInterrupted = false;
-			this.totalBytesRead = 0;
 			return false;  
 		} else {  
 			return true;  
@@ -201,7 +217,10 @@ public class LuooMediaPlayer extends Service {
 	public String getPlayingStatus() {
 		try{
 			if (this.mediaPlayer != null){
-				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + ", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + this.mediaPlayer.isPlaying() + ", \"downloading\":" + (1.0 * this.totalBytesRead/this.totalLength>=1?1:this.totalBytesRead/this.totalLength)+ "}";
+				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + 
+						", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + 
+						this.mediaPlayer.isPlaying() + ", \"downloading\":" + 
+						(1.0 *this.totalBytesRead/this.totalLength)+ "}";
 			}else{
 				return "{}";
 			}		
@@ -211,7 +230,7 @@ public class LuooMediaPlayer extends Service {
 		}						
 	}
 
-	private MediaPlayer createMediaPlayer(File mediaFile) throws IOException {  
+	private MediaPlayer createMediaPlayer(File mediaFile) throws IOException { 
 		MediaPlayer mPlayer = new MediaPlayer();  
 		mPlayer.setOnErrorListener(  
 				new MediaPlayer.OnErrorListener() {  
@@ -224,9 +243,16 @@ public class LuooMediaPlayer extends Service {
 		//  It appears that for security/permission reasons, it is better to pass a FileDescriptor rather than a direct path to the File.  
 		//  Also I have seen errors such as "PVMFErrNotSupported" and "Prepare failed.: status=0x1" if a file path String is passed to  
 		//  setDataSource().  So unless otherwise noted, we use a FileDescriptor here.  
-		FileInputStream fis = new FileInputStream(mediaFile);  
-		mPlayer.setDataSource(fis.getFD());  
+		if (fis != null) fis.close();
+		fis = new FileInputStream(mediaFile);  
+		mPlayer.setDataSource(fis.getFD());
 		mPlayer.prepare();  
+		//  release mediaPlayer cause it will be covered
+		if (this.mediaPlayer != null){
+			this.mediaPlayer.pause();
+			this.mediaPlayer.release();
+			this.mediaPlayer = null;
+		}
 		return mPlayer;  
 	} 
 	public void pausePlayer(){  
@@ -297,7 +323,6 @@ public class LuooMediaPlayer extends Service {
 	private void transferBufferToMediaPlayer() {  
 		try {  
 			// First determine if we need to restart the player after transferring data...e.g. perhaps the user pressed pause 
-			MediaPlayer mediaPlayer = this.getMediaPlayer();
 			int curPosition = mediaPlayer.getCurrentPosition();  
 			// Copy the currently downloaded content to a new buffered File.  Store the old File for deleting later.   
 			File oldBufferedFile = new File(this.getCacheDir(),"playingMedia" + counter + ".dat");  
@@ -351,8 +376,8 @@ public class LuooMediaPlayer extends Service {
 	    return( path.delete() );
 	  }
 	public class LocalBinder extends Binder {  
-		LuooMediaPlayer getService() {  
-			return LuooMediaPlayer.this;  
+		public LuooMediaPlayerService getService() {  
+			return LuooMediaPlayerService.this;  
 		}  
 	}  
 	@Override
@@ -371,7 +396,6 @@ public class LuooMediaPlayer extends Service {
 		Log.d("my", "GONE");		
 //		this.mediaPlayer.release();
 //		this.player.release();
-		this.flushCacheFiles();
 		MediaPlayer mediaPlayer = this.getMediaPlayer();
 		if (mediaPlayer != null){
 			mediaPlayer.stop();

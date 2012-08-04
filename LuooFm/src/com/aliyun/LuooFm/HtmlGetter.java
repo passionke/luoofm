@@ -16,15 +16,14 @@ import org.jsoup.select.Elements;
 import android.os.Environment;
 import android.util.Log;
 
-
-
 public class HtmlGetter {	
 	
-	public HtmlGetter(){
+	private static Document luooDoc;
+	public HtmlGetter() throws IOException{
 		
 	}
 	
-	private String getPlayListLocaly(File file, String url, String vol) throws IOException {
+	private static String getPlayListLocaly(File file, String url, String vol) throws IOException {
 		Log.d("my", "get playList locally");
 		 BufferedReader reader = null;
 		 StringBuffer strBuf = new StringBuffer();
@@ -50,12 +49,12 @@ public class HtmlGetter {
 	    		return strBuf.toString();
 	    }else{
 	    		Log.d("my", "opps, will get it from remote");
-	    		return this.getPlayListRemote(url, file, vol);
+	    		return getPlayListRemote(url, file, vol);
 	    }
 		
 	}
 	
-	public String getPlayListRemote(String url, File playListFile, String vol) throws IOException {		
+	public static String getPlayListRemote(String url, File playListFile, String vol) throws IOException {		
 		Document doc = Jsoup.connect(url).timeout(30000).get();
 		String volTitle = doc.select(".title a").get(0).text();
 		Element post = doc.select(".post").get(0);
@@ -87,8 +86,9 @@ public class HtmlGetter {
 		return playList.toString();
 	}
 	
-	public String getPlayList(int index) throws IOException{		
-		Document doc = Jsoup.connect("http://www.luoo.net").timeout(30000).get();
+	public static String getPlayList(int index) throws IOException{
+		if (luooDoc == null) luooDoc = Jsoup.connect("http://www.luoo.net/").get();
+		Document doc = luooDoc;
 		Element nowVol = doc.select("#sidebar li:eq(" + index + ")").get(0);
 		Element li = nowVol.getElementsByTag("a").get(0);
 		String vol = li.attr("href").replace("http://www.luoo.net/", "").replaceAll("/","");
@@ -96,9 +96,9 @@ public class HtmlGetter {
 		File playListFile = new File(sdCardDir + "playList.json");
 		Log.d("my", "index   :" + li.attr("href"));
 		if (playListFile.exists()){
-			return this.getPlayListLocaly(playListFile, li.attr("href"), vol);
+			return getPlayListLocaly(playListFile, li.attr("href"), vol);
 		}else{
-			return this.getPlayListRemote(li.attr("href"), playListFile, vol);
+			return getPlayListRemote(li.attr("href"), playListFile, vol);
 		}		
 	}
 }
