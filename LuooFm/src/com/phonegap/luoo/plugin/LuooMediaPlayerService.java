@@ -97,7 +97,6 @@ public class LuooMediaPlayerService extends Service {
 					File bufferedFile = new File(getCacheDir(),"playingMedia" + i + ".dat");  
 					if (bufferedFile.exists()) bufferedFile.delete();
 				}
-				counter = 0;
 				
 				//textStreamed.setText(("Audio full loaded: " + totalKbRead + " Kb read"));  
 			}  
@@ -396,7 +395,7 @@ public class LuooMediaPlayerService extends Service {
 		Log.d("my", "GONE");		
 //		this.mediaPlayer.release();
 //		this.player.release();
-		MediaPlayer mediaPlayer = this.getMediaPlayer();
+		this.flushCacheFiles();
 		if (mediaPlayer != null){
 			mediaPlayer.stop();
 			mediaPlayer.release();
