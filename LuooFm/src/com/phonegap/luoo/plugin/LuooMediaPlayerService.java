@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import java.util.Date;
-
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -302,6 +300,8 @@ public class LuooMediaPlayerService extends Service {
 		if (mediaPlayer != null ){
 			mediaPlayer.pause(); 
 		}		 
+		this.totalLength = (int) destFile.length();
+		this.totalBytesRead = this.totalLength;
 		// Create a new MediaPlayer rather than try to re-prepare the prior one.  
 		mediaPlayer = createMediaPlayer(destFile);
 		mediaPlayer.seekTo(seek);  
@@ -417,11 +417,4 @@ public class LuooMediaPlayerService extends Service {
 		Log.e("my", "start IBinder~~~");  
 		return localBinder ;  
 	}
-
-	public String getSystemTime() {
-		// TODO Auto-generated method stub
-		Date date = new Date();
-		return date.toGMTString();
-	}  
-
 }

@@ -117,8 +117,8 @@
                            */
                           if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur'] - 1000 && !statusObj['playing']){
                              clearTimeout(playNextTrackTiming);
+                             clearInterval(updater);
                              playNextTrackTiming = setTimeout(function(){
-                                  clearInterval(updater);
                                   playNextTrack(index, vol);
                                   console.log('playNextTrack');
                               }, 1000);
@@ -130,17 +130,7 @@
                   });
                 }, 1000);
             }
-            /*
-            暂停播放
-             */
-            var pauseTrack = function(){
-              if (widow.LuooFm){
-                clearInterval(updater);
-                LuooFm.pause();
-                
-              }
-                
-            }
+         
             
 
             $('.luoo-fm-player-body .controls .play').live('click', function(e){

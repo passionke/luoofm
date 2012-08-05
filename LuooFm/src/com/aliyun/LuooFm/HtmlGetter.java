@@ -74,7 +74,7 @@ public class HtmlGetter {
 				j = j + 1;
 				playList.appendSong( j, title, airtist, poster);
 			}else{
-				i = i + 1;
+				i = i - 1;
 			}			
 		}
 		//save list file to sdcard
