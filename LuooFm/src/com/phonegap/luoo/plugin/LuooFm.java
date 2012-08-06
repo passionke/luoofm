@@ -51,6 +51,7 @@ public class LuooFm {
 			getPlayerService().playLocalMedia(destFile, 0);
 		}else{			
 			Log.d("my", "play at remote");
+			getPlayerService().setNewDownload(url);
 			getPlayerService().startStreaming(url, destFile);			
 		}
 		

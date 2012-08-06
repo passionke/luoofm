@@ -1,4 +1,4 @@
-package com.aliyun.LuooFm;
+package com.phonegap.luoo.plugin;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.aliyun.LuooFm.PlayList;
 
 
 import android.os.Environment;
@@ -87,7 +89,8 @@ public class HtmlGetter {
 	}
 	
 	public static String getPlayList(int index) throws IOException{
-		if (luooDoc == null) luooDoc = Jsoup.connect("http://www.luoo.net/").get();
+		
+		if (luooDoc == null) luooDoc = Jsoup.connect("http://luoo.net").timeout(30000).get();
 		Document doc = luooDoc;
 		Element nowVol = doc.select("#sidebar li:eq(" + index + ")").get(0);
 		Element li = nowVol.getElementsByTag("a").get(0);

@@ -33,22 +33,22 @@ public class LuooMediaPlayerService extends Service {
 	private static Runnable r;
 	private static Thread playerThread;
 	private File destFile;
-	private int totalLength = 1;
-	private int totalBytesRead = 1;
-	private String lastDownloading = "";
-	private Runnable updater;
-	private Runnable updater1;
-	private boolean downloading;
+	private static int totalLength = 1;
+	private static int totalBytesRead = 1;
+	private static Runnable updater;
+	private static Runnable updater1;
 	private int lastKbRead = 0;
 	private FileInputStream fis;
+	private static String lastDownloading;
 	
 	
 	public LuooMediaPlayerService() {
 	}
+	public void setNewDownload(String mediaUrl) {
+		lastDownloading = mediaUrl;
+	}
 	private void initUpdater(){
-		updater = new Runnable() {  
-			
-
+		updater = new Runnable() {
 			public void run() {				
 				if (getMediaPlayer() == null) {  
 					//  Only create the MediaPlayer once we have the minimum buffered data  
@@ -106,10 +106,8 @@ public class LuooMediaPlayerService extends Service {
 		/*
 		 * 如果播放不是同一首歌，则将mediaPlayer清空,如果播放的不是同一首歌，并且前一首还在下载中，设置标志位为true。终止上次下载。
 		 */
-		if (this.lastDownloading.equals(mediaUrl)) return;
-		this.isInterrupted = false;
-		if (this.downloading){
-			this.isInterrupted = true;
+		if (totalBytesRead != totalLength){
+			this.isInterrupted = true;			
 			Log.d("my", "now plya" + mediaUrl + "cancel befor downloading");
 		}
 		if (this.mediaPlayer != null) {
@@ -118,10 +116,9 @@ public class LuooMediaPlayerService extends Service {
 			this.mediaPlayer = null;
 		}
 		
-		lastDownloading = mediaUrl;
 	    this.destFile = destFile;
 		r = new Runnable() {     
-			public void run() {     
+			public synchronized void run() {     
 				try { 
 					downloadAudioIncrement(mediaUrl);  
 				} catch (IOException e) {  
@@ -136,7 +133,7 @@ public class LuooMediaPlayerService extends Service {
 		playerThread.start();
 	}  
 
-	public void downloadAudioIncrement(String mediaUrl) throws IOException {  
+	public synchronized void downloadAudioIncrement(String mediaUrl) throws IOException {  
 		HttpURLConnection cn = (HttpURLConnection)new URL(mediaUrl).openConnection();  
 		cn.addRequestProperty("User-Agent","LuooFM Player/10.0.0.4072");  
 		cn.setConnectTimeout(10000);
@@ -159,17 +156,16 @@ public class LuooMediaPlayerService extends Service {
 		byte buf[] = new byte[16384];  
 		totalBytesRead = 0;  
 		Log.d("my", "begin download ");
+		this.isInterrupted = false;
 		do {  
-			this.downloading = true;
 			int numread = stream.read(buf);     
 			if (numread <= 0)     
 				break;     
 			out.write(buf, 0, numread);  
 			totalBytesRead += numread;
-			this.totalKbRead = this.totalBytesRead/1024;
+			this.totalKbRead = totalBytesRead/1024;
 			testMediaBuffer();  
-		} while (validateNotInterrupted());     
-		this.downloading = false;
+		} while (validateNotInterrupted(mediaUrl));     
 		if (totalBytesRead == totalLength) {
 			fireDataFullyLoaded();  
 		}  
@@ -185,8 +181,8 @@ public class LuooMediaPlayerService extends Service {
 		// TODO Auto-generated method stub		  
 		handler.post(updater);  
 	}   
-	private boolean validateNotInterrupted() {
-		if (isInterrupted) {  
+	private boolean validateNotInterrupted(String mediaUrl) {
+		if (isInterrupted || !lastDownloading.equals(mediaUrl)) {  
 			this.isInterrupted = false;
 			return false;  
 		} else {  
@@ -219,7 +215,7 @@ public class LuooMediaPlayerService extends Service {
 				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + 
 						", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + 
 						this.mediaPlayer.isPlaying() + ", \"downloading\":" + 
-						(1.0 *this.totalBytesRead/this.totalLength)+ "}";
+						(1.0 *totalBytesRead/totalLength)+ "}";
 			}else{
 				return "{}";
 			}		

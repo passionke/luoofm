@@ -9,7 +9,7 @@
   <script type="text/javascript" src="js/phonegap.js"></script>
   <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="js/iscroll.js"></script>
-  <script type="text/javascript" src="js/myplaylist.js"></script>
+  <script type="text/javascript" src="js/mediacontrol.js"></script>
   <script type="text/javascript">
         $(document).ready(function(){
              var updater;
@@ -121,7 +121,7 @@
                                   clearInterval(updater);
                                   playNextTrack(index, vol);
                                   console.log('playNextTrack');
-                              }, 1000);
+                              }, 100);
                           }
                         }
                   },
@@ -130,19 +130,7 @@
                   });
                 }, 1000);
             }
-            /*
-            暂停播放
-             */
-            var pauseTrack = function(){
-              if (widow.LuooFm){
-                clearInterval(updater);
-                LuooFm.pause();
-                
-              }
-                
-            }
-            
-
+           
             $('.luoo-fm-player-body .controls .play').live('click', function(e){
                 var target = $(e.currentTarget);
                     window.plugins.mediacontrol.pause();
@@ -179,6 +167,16 @@
                     $(e.currentTarget).removeClass('pressed');
                 });   
             });
+
+            $('.luoo-fm .more ul div').on('mousedown touchstart', function(e){
+              $(e.currentTarget).addClass('light');
+            });
+
+             $('.luoo-fm .more ul div').on('mouseup touchend', function(e){
+              $(e.currentTarget).removeClass('light');
+            });
+
+
 
             /*
             播放界面，列表界面切换
@@ -297,6 +295,11 @@
                     });  
                 }
                 getPlayList(0, 4); 
+
+                $('.luoo-fm .more ul div').on('click', function(){
+                  var volsnum = $('.list-wrap ul').length;
+                  getPlayList(volsnum, volsnum + 1);
+             });
             }
                      
          });  
@@ -330,6 +333,13 @@
       <div class="logo"></div>
       <div id="wrapper">
         <div class="list-wrap"></div>
+        <div class="more">
+          <ul>
+            <div>
+              <h3>加载更多</h3>
+            </div>
+          </ul>
+        </div>
       </div>
     </ul>
   </div>
