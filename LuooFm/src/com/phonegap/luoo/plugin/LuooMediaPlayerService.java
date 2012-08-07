@@ -44,9 +44,11 @@ public class LuooMediaPlayerService extends Service {
 	
 	public LuooMediaPlayerService() {
 	}
+	
 	public void setNewDownload(String mediaUrl) {
 		lastDownloading = mediaUrl;
 	}
+	
 	private void initUpdater(){
 		updater = new Runnable() {
 			public void run() {				

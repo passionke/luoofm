@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 import com.aliyun.LuooFm.EntranceActivity;
+import com.aliyun.LuooFm.R;
 
 
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 
 import android.util.Log;
@@ -28,7 +32,7 @@ public class LuooFm {
 	
 	private static LuooMediaPlayerService getPlayerService() {
 		if (luooPlayerService == null){
-			luooPlayerService = EntranceActivity.luooPlayerService;
+			luooPlayerService = EntranceActivity.getLuooMediaPlayer();
 		}
 		return luooPlayerService;
 	}
@@ -54,15 +58,34 @@ public class LuooFm {
 		}else{			
 			Log.d("my", "play at remote");
 			getPlayerService().setNewDownload(url);
+			Log.d("my", "set last download as " + url);
 			getPlayerService().startStreaming(url, destFile);			
 		}
 		
 	}
+	
+	public static void showNotification(Context ctx, String msg) {
+		 String ns = Context.NOTIFICATION_SERVICE;
+		  NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(ns);
+		  long when = System.currentTimeMillis();
+		  Notification notification = new Notification(R.drawable.icon, "updater", when);
+		 
+		  Context context = ctx.getApplicationContext();
 
+       CharSequence contentTitle = "LuooFm";
 
-	public void notification(String string) {
-		// TODO Auto-generated method stub
+       CharSequence contentText = msg;
 
+       Intent notificationIntent = new Intent(ctx, ctx.getClass());
+
+       PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
+
+       notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent); 
+       mNotificationManager.notify(1, notification);
+		  
 	}
+
+
+	
 	
 }

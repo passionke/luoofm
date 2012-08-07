@@ -7,14 +7,9 @@ import org.json.JSONException;
 
 
 
-import android.R;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 
-import com.aliyun.LuooFm.EntranceActivity;
+import android.util.Log;
+
 import com.phonegap.api.Plugin;
 import com.phonegap.api.PluginResult;
 
@@ -35,12 +30,16 @@ public class LuooMediaPlayer extends Plugin {
 				e.printStackTrace();
 			}
 		}else if (action.equals("play")){		
-			showNotification();
+			
 			try {
-				String playargs = args.getString(0);
-				String url = playargs.split(",")[0];
-				String vol = playargs.split(",")[1];
+				String[] playargs = args.getString(0).split(",");
+				String url = playargs[0];
+				String vol = playargs[1];
+				String title = playargs[2];
+				String artist =playargs[3];
+				Log.d("my", "notitification " + title + "artist" + artist);
 				LuooFm.play(url, vol);
+				LuooFm.showNotification(this.ctx, title + " - " + artist);
 				result = "ok~";
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -69,26 +68,5 @@ public class LuooMediaPlayer extends Plugin {
 		return new PluginResult(status, result);
 	}
 	
-	private void showNotification() {
-		 String ns = Context.NOTIFICATION_SERVICE;
-		  NotificationManager mNotificationManager = (NotificationManager) this.ctx.getSystemService(ns);
-		  long when = System.currentTimeMillis();
-		  Notification notification = new Notification(R.drawable.btn_star, "总有一天我会离开你", when);
-		  Context context = this.ctx.getApplicationContext();
-
-        CharSequence contentTitle = "我的通知栏标展开标题";
-
-        CharSequence contentText = "我的通知栏展开详细内容";
-
-        Intent notificationIntent = new Intent(this.ctx, EntranceActivity.class);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this.ctx, 0,notificationIntent, 0);
-
-        notification.setLatestEventInfo(context, contentTitle, contentText,contentIntent); 
-
-        //用mNotificationManager的notify方法通知用户生成标题栏消息通知
-
-        mNotificationManager.notify(1, notification);
-		  
-	}
+	
 }

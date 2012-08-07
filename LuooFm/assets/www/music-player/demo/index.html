@@ -33,7 +33,7 @@
                  var tracks = '';
                 
                  for (var i = 0; i < playList.length; i++){
-                    tracks = '<li index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
+                    tracks = '<li title=\"' + playList[i]["title"] + '\" index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
                     playListHtml += tracks;
                  }
                  playListHtml += '</ul>';                 
@@ -81,16 +81,15 @@
               var target = $('.list-wrap ul[vol=' + vol + '] li[index=' + index + ']');
               var url =  target.attr('mp3');
               var vol = target.parent().attr('vol');
-                if (window.LuooFm){
-                    LuooFm.play(url, vol);
-                    control = "play";
-                }else{
-                    window.plugins.mediacontrol.play([url, vol].join(','), function(result){
-                      console.log(result);
-                    }, function(e){
-                      console.log(e);
-                    });
-                }
+              var title = target.attr('title');
+              var artist = target.attr('artist');
+                
+              window.plugins.mediacontrol.play([url, vol, title, artist].join(','), function(result){
+                console.log(result);
+              }, function(e){
+                console.log(e);
+              });
+      
                 $('.time .now').text(timeFormate(0));
                 $('.time .total').text(timeFormate(0));
                 $('.timing .played').css('width', 0);
@@ -111,9 +110,11 @@
                           if (statusObj['playing']){
                               $('.controls img:eq(1)').removeClass('pause').addClass('play');
                               $('.controls img:eq(1)')[0].src = 'images/player_play.png'; 
+                               $('.luoo-fm-player-body .poster .loading').hide();
                           }else{
                               $('.controls img:eq(1)').removeClass('play').addClass('pause');
                               $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
+                               $('.luoo-fm-player-body .poster .loading').hide();
                              
                           }
                           /*
@@ -127,7 +128,9 @@
                                   console.log('playNextTrack');
                               }, 100);
                           }
-                        }
+                        }else{
+                            $('.luoo-fm-player-body .poster .loading').show();
+                          }
                   },
                   function(e){
                     console.log(e);
@@ -187,7 +190,6 @@
              */
             $('.logo').on('click', function(){
                var wid = $('.luoo-fm').width();
-
                 if ($('#luoo_list').css('left') == '0px'){
                     $('#luoo_player').show();
                     $('#luoo_list').show();
@@ -298,7 +300,7 @@
                         return;
                     });  
                 }
-                getPlayList(0, 4); 
+                getPlayList(0, 0); 
 
                 $('.luoo-fm .more ul div').on('click', function(){
                   var volsnum = $('.list-wrap ul').length;
@@ -314,7 +316,9 @@
       <div class="luoo-fm-player-body">
         <div class="logo"></div>
         <div class="poster">
-          <img src="" alt=""></div>
+          <img src="" alt=""></img>
+          <div class="loading"></div>
+        </div>
         <div class="track-info">
           <p class="title">undefined</p>
           <p class="album">undefined</p>

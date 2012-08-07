@@ -20,10 +20,11 @@ public class EntranceActivity extends DroidGap {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setFullscreen();   
+		this.setFullscreen(); 
+		bindPlayerService();
 		super.loadUrl("file:///android_asset/www/music-player/demo/index.html");
 		//appView.getSettings().setJavaScriptEnabled(true); 
-		bindPlayerService();
+		
 		//appView.addJavascriptInterface(new LuooFm(EntranceActivity.this), "LuooFm"); 
 	}
 	
@@ -35,6 +36,7 @@ public class EntranceActivity extends DroidGap {
 		public void onServiceConnected(ComponentName name, IBinder service) {  
 			// TODO Auto-generated method stub  
 			luooPlayerService = ((LuooMediaPlayerService.LocalBinder)service).getService();  
+			Log.d("my", "i have init");
 		}  
 		public void onServiceDisconnected(ComponentName name) {  
 			// TODO Auto-generated method stub 
@@ -43,12 +45,12 @@ public class EntranceActivity extends DroidGap {
 			mServiceConnection = null;
 		}  
 	};
-	private Intent i;  
+	  
 	public void bindPlayerService() {
-		i  = new Intent();  
+		Intent i = new Intent();  
 		i.setClass(this, LuooMediaPlayerService.class);       
 		// EntranceActivity.this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
-		this.bindService(i, this.mServiceConnection, BIND_AUTO_CREATE);
+		this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
 	}
 	public void setFullscreen() {
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
