@@ -7,6 +7,8 @@ import com.aliyun.LuooFm.EntranceActivity;
 
 
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Environment;
 
 import android.util.Log;
@@ -55,6 +57,12 @@ public class LuooFm {
 			getPlayerService().startStreaming(url, destFile);			
 		}
 		
+	}
+
+
+	public void notification(String string) {
+		// TODO Auto-generated method stub
+
 	}
 	
 }

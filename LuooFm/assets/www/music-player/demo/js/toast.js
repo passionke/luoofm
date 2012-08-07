@@ -19,8 +19,8 @@ Toast.prototype = {
         msgEntity = $(msgDIV.join('')).appendTo(this.context);  
         //设置消息样式  
         var left = this.left == null ? this.context.width()/2-msgEntity.find('span').width()/2 : this.left;  
-        var top = this.top == null ? '20px' : this.top;  
-        msgEntity.css({position:'absolute',top:top,'z-index':'99',left:left,'background-color':'black',color:'white','font-size':'18px',padding:'10px',margin:'10px'});  
+        var bottom = this.bottom == null ? '20px' : this.bottom;  
+        msgEntity.css({position:'absolute',bottom:bottom,'z-index':'99',left:left,'background-color':'black',color:'white','font-size':'18px',padding:'10px',margin:'10px'});  
         msgEntity.hide();  
     },  
     //显示动画  
