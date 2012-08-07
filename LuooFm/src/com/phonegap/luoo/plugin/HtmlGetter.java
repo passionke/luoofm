@@ -95,7 +95,7 @@ public class HtmlGetter {
 		Element nowVol = doc.select("#sidebar li:eq(" + index + ")").get(0);
 		Element li = nowVol.getElementsByTag("a").get(0);
 		String vol = li.attr("href").replace("http://www.luoo.net/", "").replaceAll("/","");
-		String sdCardDir = Environment.getExternalStorageDirectory() + "/LuooFm/vol" + vol + "/";
+		String sdCardDir = Environment.getExternalStorageDirectory() + "/LuooFm/vol/" + vol;
 		File playListFile = new File(sdCardDir + "playList.json");
 		Log.d("my", "index   :" + li.attr("href"));
 		if (playListFile.exists()){
