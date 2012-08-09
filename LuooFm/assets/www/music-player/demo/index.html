@@ -83,8 +83,9 @@
               var vol = target.parent().attr('vol');
               var title = target.attr('title');
               var artist = target.attr('artist');
-                
-              window.plugins.mediacontrol.play([url, vol, title, artist].join(','), function(result){
+              var volTitle = target.parent().find('h3').text();
+              var volTitle = volTitle.substr(volTitle.indexOf(' ') + 1);
+              window.plugins.mediacontrol.play([url, vol, title, artist, volTitle].join(','), function(result){
                 console.log(result);
               }, function(e){
                 console.log(e);

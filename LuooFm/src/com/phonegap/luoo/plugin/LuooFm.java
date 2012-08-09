@@ -64,24 +64,22 @@ public class LuooFm {
 		
 	}
 	
-	public static void showNotification(Context ctx, String msg) {
+	public static void showNotification(Context ctx, String title, String msg) {
 		 String ns = Context.NOTIFICATION_SERVICE;
 		  NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(ns);
 		  long when = System.currentTimeMillis();
 		  Notification notification = new Notification(R.drawable.icon, "updater", when);
-		 
+		 notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
 		  Context context = ctx.getApplicationContext();
 
-       CharSequence contentTitle = "LuooFm";
-
+       CharSequence contentTitle = "LuooFm" + title;
        CharSequence contentText = msg;
-
        Intent notificationIntent = new Intent(ctx, ctx.getClass());
 
        PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
 
        notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent); 
-       mNotificationManager.notify(1, notification);
+       mNotificationManager.notify(0, notification);
 		  
 	}
 

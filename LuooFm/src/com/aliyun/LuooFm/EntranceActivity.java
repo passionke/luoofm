@@ -4,6 +4,7 @@ import com.phonegap.DroidGap;
 import com.phonegap.luoo.plugin.LuooMediaPlayerService;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -60,9 +61,15 @@ public class EntranceActivity extends DroidGap {
 
 	@Override
 	public void onDestroy () {
-		Log.d("my", "opps");
-		super.onDestroy();
+		Log.d("my", "opps");		
 		this.unbindService(mServiceConnection);
 		this.stopService(new Intent().setClass(this, LuooMediaPlayerService.class));
+		super.onDestroy();
+		
+		//清除通知栏
+		NotificationManager notificationManager = (NotificationManager) this
+                .getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancel(0);
+		System.exit(0);
 	}
 }

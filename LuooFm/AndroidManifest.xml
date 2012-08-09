@@ -36,7 +36,7 @@
             android:name=".EntranceActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,11 +44,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
             android:name="com.phonegap.DroidGap"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
+            
             <intent-filter>
             </intent-filter>
         </activity>

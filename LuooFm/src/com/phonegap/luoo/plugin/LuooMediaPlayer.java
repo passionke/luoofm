@@ -37,9 +37,10 @@ public class LuooMediaPlayer extends Plugin {
 				String vol = playargs[1];
 				String title = playargs[2];
 				String artist =playargs[3];
+				String volTitle = playargs[4];
 				Log.d("my", "notitification " + title + "artist" + artist);
 				LuooFm.play(url, vol);
-				LuooFm.showNotification(this.ctx, title + " - " + artist);
+				LuooFm.showNotification(this.ctx,volTitle, title + " - " + artist);
 				result = "ok~";
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

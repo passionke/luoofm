@@ -26,19 +26,20 @@ public class LuooMediaPlayerService extends Service {
 	private MediaPlayer mediaPlayer;
 	private final Handler handler = new Handler();  
 	private File downloadingMediaFile;
-	private int totalKbRead = 0;
+	private Long totalKbRead = 0L;
 	private int counter = 0;
 	private boolean isInterrupted;
 	private LocalBinder localBinder = new LocalBinder();
 	private static Runnable r;
 	private static Thread playerThread;
 	private File destFile;
-	private static int totalLength = 1;
-	private static int totalBytesRead = 1;
+	private static Long totalLength = 1L;
+	private static Long totalBytesRead = 1L;
 	private static Runnable updater;
 	private static Runnable updater1;
-	private int lastKbRead = 0;
+	private Long lastKbRead = 0L;
 	private FileInputStream fis;
+	private InputStream stream;
 	private static String lastDownloading;
 	
 	
@@ -47,6 +48,15 @@ public class LuooMediaPlayerService extends Service {
 	
 	public void setNewDownload(String mediaUrl) {
 		lastDownloading = mediaUrl;
+		if (stream != null)
+			try {
+				stream.close();
+				totalLength = 0L;
+				totalBytesRead = 0L;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 	private void initUpdater(){
@@ -63,6 +73,7 @@ public class LuooMediaPlayerService extends Service {
 					}  
 				} else{
 					try{
+						if (lastKbRead > totalKbRead) lastKbRead = totalKbRead;
 						if ( mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 1000 || !mediaPlayer.isPlaying()
 								&& (totalKbRead - lastKbRead) > INTIAL_KB_BUFFER ){  
 							//  NOTE:  The media player has stopped at the end so transfer any existing buffered data  
@@ -135,14 +146,14 @@ public class LuooMediaPlayerService extends Service {
 		playerThread.start();
 	}  
 
-	public synchronized void downloadAudioIncrement(String mediaUrl) throws IOException {  
+	public void downloadAudioIncrement(String mediaUrl) throws IOException {  
 		HttpURLConnection cn = (HttpURLConnection)new URL(mediaUrl).openConnection();  
 		cn.addRequestProperty("User-Agent","LuooFM Player/10.0.0.4072");  
 		cn.setConnectTimeout(10000);
 		cn.setReadTimeout(30000);
 		cn.connect();		
-		totalLength = cn.getContentLength();
-		InputStream stream = cn.getInputStream();  
+		totalLength = (long) cn.getContentLength();
+		stream = cn.getInputStream();  
 		if (stream == null) {  
 			Log.e("my", "Unable to create InputStream for mediaUrl:" + mediaUrl);  
 		}  
@@ -156,7 +167,7 @@ public class LuooMediaPlayerService extends Service {
 		}
 		FileOutputStream out = new FileOutputStream(downloadingMediaFile);     
 		byte buf[] = new byte[16384];  
-		totalBytesRead = 0;  
+		totalBytesRead = 0L;  
 		Log.d("my", "begin download ");
 		this.isInterrupted = false;
 		do {  
@@ -165,6 +176,7 @@ public class LuooMediaPlayerService extends Service {
 				break;     
 			out.write(buf, 0, numread);  
 			totalBytesRead += numread;
+			Log.d("download", "reviced " + totalBytesRead);
 			this.totalKbRead = totalBytesRead/1024;
 			testMediaBuffer();  
 		} while (validateNotInterrupted(mediaUrl));     
@@ -323,9 +335,7 @@ public class LuooMediaPlayerService extends Service {
 			int curPosition = mediaPlayer.getCurrentPosition();  
 			// Copy the currently downloaded content to a new buffered File.  Store the old File for deleting later.   
 			File oldBufferedFile = new File(this.getCacheDir(),"playingMedia" + counter + ".dat");  
-			File bufferedFile = new File(this.getCacheDir(),"playingMedia" + (counter++) + ".dat");  
-
-			//  This may be the last buffered File so ask that it be delete on exit.  If it's already deleted, then this won't mean anything.  If you want to   
+			File bufferedFile = new File(this.getCacheDir(),"playingMedia" + (counter++) + ".dat");  			//  This may be the last buffered File so ask that it be delete on exit.  If it's already deleted, then this won't mean anything.  If you want to   
 			// keep and track fully downloaded files for later use, write caching code and please send me a copy.  
 			bufferedFile.deleteOnExit();     
 			moveFile(downloadingMediaFile,bufferedFile); 
@@ -391,14 +401,14 @@ public class LuooMediaPlayerService extends Service {
 	public void onDestroy() { 
 		super.onDestroy();
 		Log.d("my", "GONE");		
-//		this.mediaPlayer.release();
-//		this.player.release();
 		this.flushCacheFiles();
+		this.isInterrupted = true;
 		if (mediaPlayer != null){
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
 		}
+		
 		
 	}  
 	
