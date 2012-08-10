@@ -3,6 +3,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
     // Cordova is ready
     //
     function onDeviceReady() {
+        document.addEventListener("backbutton", onBackKeyDown, false);
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
     }
 
@@ -32,4 +33,10 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
     function fail(error) {
         console.log(error.code);
+    }
+
+
+	function onBackKeyDown() {
+    // Handle the back button
+        console.log("onBackKeyDown");
     }
