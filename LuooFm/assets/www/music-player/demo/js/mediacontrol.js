@@ -29,6 +29,11 @@ MediaControl.prototype.getPlayingStatus = function(params, win, fail) {
       PhoneGap.exec(win, fail, "LuooMediaPlayer", "getPlayingStatus", [params]);
 };
 
+MediaControl.prototype.stop = function(params, win, fail) {
+  //Make params hash optional.
+    if (!fail) win = params;
+      PhoneGap.exec(win, fail, "LuooMediaPlayer", "stop", [params]);
+};
 PhoneGap.addConstructor(function() {
     PhoneGap.addPlugin("mediacontrol", new MediaControl());
 });

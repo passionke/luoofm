@@ -20,11 +20,11 @@
              var currentTrack;
              var playNextTrackTiming;
              var control = "play";    
-             var lock = false; //iscroll滑动过程中，click事件不被触发 
-              var test = '{"title":"VOL.386 Sex, Drugs, and Rock ‘n Roll","cover":"http://www.luoo.net/wp-content/uploads/386.jpg","vol":"386","playList":[{"mp3":"http://ftp.luoo.net/radio/radio386/01.mp3", "title":"01.EVO ", "artist":"– Requiem for a Dream (Clint Mansell cover) 选自《На Краю Вселенной》","cover":"http://www.luoo.net/wp-content/uploads/cover_467323.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/02.mp3", "title":"02.Nachtmahr ", "artist":"– Rise and Fall (Patrick Damiani Remix) 选自《Can You Feel the Beat?》","cover":"http://img1.douban.com/lpic/s6974331.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/03.mp3", "title":"03.Funker Vogt ", "artist":"– Cold War 选自《Maschine Zeit》","cover":"http://img3.douban.com/lpic/s1504918.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/04.mp3", "title":"04.Terminal Choice ", "artist":"– Keine Macht 选自《Übermacht》","cover":"http://img1.douban.com/lpic/s4190852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/05.mp3", "title":"05.Noisuf-X ", "artist":"– Please Hang Up 选自《Excessive Exposure》","cover":"http://img1.douban.com/lpic/s4214624.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/06.mp3", "title":"06.Psyclon Nine ", "artist":"– We The Fallen 选自《We The Fallen》","cover":"http://img3.douban.com/lpic/s3935157.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/07.mp3", "title":"07.Blue Stahli ", "artist":"– Overklock 选自《Antisleep, Vol. 01》","cover":"http://img3.douban.com/lpic/s4460407.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/08.mp3", "title":"08.Velvet Acid Christ ", "artist":"– Black Rainbows 选自《The Art Of Breaking Apart》","cover":"http://img3.douban.com/lpic/s4048876.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/09.mp3", "title":"09.XMH ", "artist":"– Tears In Rain 选自《State Of Mind》","cover":"http://img1.douban.com/lpic/s4358944.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/10.mp3", "title":"10.Rammstein; Northern Lite ", "artist":"– Rosenrot (Northern Lite Remix) 选自《Rosenrot》","cover":"http://img1.douban.com/lpic/s3912724.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/11.mp3", "title":"11.Otto Dix ", "artist":"– Зона Теней 选自《Зона Теней》","cover":"http://img1.douban.com/lpic/s3692964.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/12.mp3", "title":"12.Unheilig;Xavier Naidoo ", "artist":"– Zeitreise 选自《Lichter der Stadt》","cover":"http://img5.douban.com/lpic/s8901929.jpg"}]}';
+             var lock = false; //iscroll婊戝姩杩囩▼涓紝click浜嬩欢涓嶈瑙﹀彂 
+              var test = '{"title":"VOL.386 Sex, Drugs, and Rock 鈥榥 Roll","cover":"http://www.luoo.net/wp-content/uploads/386.jpg","vol":"386","playList":[{"mp3":"http://ftp.luoo.net/radio/radio386/01.mp3", "title":"01.EVO ", "artist":"鈥�Requiem for a Dream (Clint Mansell cover) 閫夎嚜銆娦澬�袣褉邪褞 袙褋械谢械薪薪芯泄銆�,"cover":"http://www.luoo.net/wp-content/uploads/cover_467323.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/02.mp3", "title":"02.Nachtmahr ", "artist":"鈥�Rise and Fall (Patrick Damiani Remix) 閫夎嚜銆奀an You Feel the Beat?銆�,"cover":"http://img1.douban.com/lpic/s6974331.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/03.mp3", "title":"03.Funker Vogt ", "artist":"鈥�Cold War 閫夎嚜銆奙aschine Zeit銆�,"cover":"http://img3.douban.com/lpic/s1504918.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/04.mp3", "title":"04.Terminal Choice ", "artist":"鈥�Keine Macht 閫夎嚜銆娒渂ermacht銆�,"cover":"http://img1.douban.com/lpic/s4190852.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/05.mp3", "title":"05.Noisuf-X ", "artist":"鈥�Please Hang Up 閫夎嚜銆奅xcessive Exposure銆�,"cover":"http://img1.douban.com/lpic/s4214624.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/06.mp3", "title":"06.Psyclon Nine ", "artist":"鈥�We The Fallen 閫夎嚜銆奧e The Fallen銆�,"cover":"http://img3.douban.com/lpic/s3935157.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/07.mp3", "title":"07.Blue Stahli ", "artist":"鈥�Overklock 閫夎嚜銆夾ntisleep, Vol. 01銆�,"cover":"http://img3.douban.com/lpic/s4460407.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/08.mp3", "title":"08.Velvet Acid Christ ", "artist":"鈥�Black Rainbows 閫夎嚜銆奣he Art Of Breaking Apart銆�,"cover":"http://img3.douban.com/lpic/s4048876.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/09.mp3", "title":"09.XMH ", "artist":"鈥�Tears In Rain 閫夎嚜銆奡tate Of Mind銆�,"cover":"http://img1.douban.com/lpic/s4358944.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/10.mp3", "title":"10.Rammstein; Northern Lite ", "artist":"鈥�Rosenrot (Northern Lite Remix) 閫夎嚜銆奟osenrot銆�,"cover":"http://img1.douban.com/lpic/s3912724.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/11.mp3", "title":"11.Otto Dix ", "artist":"鈥�袟芯薪邪 孝械薪械泄 閫夎嚜銆娦椥拘叫�孝械薪械泄銆�,"cover":"http://img1.douban.com/lpic/s3692964.jpg"},{"mp3":"http://ftp.luoo.net/radio/radio386/12.mp3", "title":"12.Unheilig;Xavier Naidoo ", "artist":"鈥�Zeitreise 閫夎嚜銆奓ichter der Stadt銆�,"cover":"http://img5.douban.com/lpic/s8901929.jpg"}]}';
        
             /*
-            * 将拿到的播放列表渲染到列表页面，基本信息写在li元素里面，单击的时候，直接获取这些信息送入后台
+            * 灏嗘嬁鍒扮殑鎾斁鍒楄〃娓叉煋鍒板垪琛ㄩ〉闈紝鍩烘湰淇℃伅鍐欏湪li鍏冪礌閲岄潰锛屽崟鍑荤殑鏃跺�锛岀洿鎺ヨ幏鍙栬繖浜涗俊鎭�鍏ュ悗鍙�
             */
            
              var renderVol = function(vol){
@@ -33,14 +33,14 @@
                  var tracks = '';
                 
                  for (var i = 0; i < playList.length; i++){
-                    tracks = '<li index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
+                    tracks = '<li title=\"' + playList[i]["title"] + '\" index=\"' + i + '\" mp3="' + playList[i]["mp3"] + '" poster="' + playList[i]["cover"]+ '" artist="' + playList[i]["artist"]+ '"><span>' + playList[i]["title"] + '</span></li>';
                     playListHtml += tracks;
                  }
                  playListHtml += '</ul>';                 
                  $('.list-wrap').append(playListHtml);
              }    
              /*
-             将毫秒数转换成分秒格式，显示在播放器页面             
+             灏嗘绉掓暟杞崲鎴愬垎绉掓牸寮忥紝鏄剧ず鍦ㄦ挱鏀惧櫒椤甸潰             
               */
               
             var timeFormate = function(ms) {
@@ -50,8 +50,8 @@
               return minute + ":" + (second<10?"0" + second:second);
             }   
             /*
-            上一曲下一曲的响应方式通过调用li的上一个元素或者下一个元素的click事件来触发。click事件的响应中有具体的播放控制
-            最上一个元素的上一曲将跳转到本期的最末歌曲
+            涓婁竴鏇蹭笅涓�洸鐨勫搷搴旀柟寮忛�杩囪皟鐢╨i鐨勪笂涓�釜鍏冪礌鎴栬�涓嬩竴涓厓绱犵殑click浜嬩欢鏉ヨЕ鍙戙�click浜嬩欢鐨勫搷搴斾腑鏈夊叿浣撶殑鎾斁鎺у埗
+            鏈�笂涓�釜鍏冪礌鐨勪笂涓�洸灏嗚烦杞埌鏈湡鐨勬渶鏈瓕鏇�
              */
             var playPreTrack = function(index, vol) {
               var par = $('.list-wrap ul[vol=' + vol + ']');
@@ -62,8 +62,8 @@
               }
             }    
             /*
-            上一曲下一曲的响应方式通过调用li的上一个元素或者下一个元素的click事件来触发。click事件的响应中有具体的播放控制
-            最末歌曲的下一首将播放本期的第一首歌曲
+            涓婁竴鏇蹭笅涓�洸鐨勫搷搴旀柟寮忛�杩囪皟鐢╨i鐨勪笂涓�釜鍏冪礌鎴栬�涓嬩竴涓厓绱犵殑click浜嬩欢鏉ヨЕ鍙戙�click浜嬩欢鐨勫搷搴斾腑鏈夊叿浣撶殑鎾斁鎺у埗
+            鏈�湯姝屾洸鐨勪笅涓�灏嗘挱鏀炬湰鏈熺殑绗竴棣栨瓕鏇�
              */
             var playNextTrack = function(index, vol)  {
               console.log('now index and vol  ' + index + 'he  ' + vol);
@@ -75,34 +75,33 @@
               }
             }   
             /*
-            播放歌曲唯一入口，所有行为都通过这个函数播放.
+            鎾斁姝屾洸鍞竴鍏ュ彛锛屾墍鏈夎涓洪兘閫氳繃杩欎釜鍑芥暟鎾斁.
              */
             var playTrack = function(index, vol){
               var target = $('.list-wrap ul[vol=' + vol + '] li[index=' + index + ']');
               var url =  target.attr('mp3');
               var vol = target.parent().attr('vol');
-                if (window.LuooFm){
-                    LuooFm.play(url, vol);
-                    control = "play";
-                }else{
-                    window.plugins.mediacontrol.play([url, vol].join(','), function(result){
-                      console.log(result);
-                    }, function(e){
-                      console.log(e);
-                    });
-                }
+              var title = target.attr('title');
+              var artist = target.attr('artist');
+                
+              window.plugins.mediacontrol.play([url, vol, title, artist].join(','), function(result){
+                console.log(result);
+              }, function(e){
+                console.log(e);
+              });
+      
                 $('.time .now').text(timeFormate(0));
                 $('.time .total').text(timeFormate(0));
                 $('.timing .played').css('width', 0);
                 $('.timing .download').css('width', 0);
                 /*
-                没个一秒做定时更新，包括播放时间更新。下载状态更新，播放状态更新等。
+                娌′釜涓�鍋氬畾鏃舵洿鏂帮紝鍖呮嫭鎾斁鏃堕棿鏇存柊銆備笅杞界姸鎬佹洿鏂帮紝鎾斁鐘舵�鏇存柊绛夈�
                  */
-                clearInterval(updater);                
+                //clearInterval(updater);                
                 updater = setInterval(function(){
                   window.plugins.mediacontrol.getPlayingStatus(0, function(status){
                        var statusObj = JSON.parse(status);
-                       console.log(status);
+                       //console.log(status);
                         if (statusObj["playing"] != undefined){
                           $('.time .now').text(timeFormate(statusObj['cur']));
                           $('.time .total').text(timeFormate(statusObj['dur']));
@@ -111,13 +110,21 @@
                           if (statusObj['playing']){
                               $('.controls img:eq(1)').removeClass('pause').addClass('play');
                               $('.controls img:eq(1)')[0].src = 'images/player_play.png'; 
+                               $('.luoo-fm-player-body .poster .loading').hide();
                           }else{
                               $('.controls img:eq(1)').removeClass('play').addClass('pause');
                               $('.controls img:eq(1)')[0].src = 'images/player_pause.png';
+                               $('.luoo-fm-player-body .poster .loading').hide();
                              
                           }
+					      if((statusObj['stop'])) {
+							$('.luoo-fm-player-body .controls .play').click();
+							console.log('stop status');
+						  } else {
+							$('.luoo-fm-player-body .controls .pause').click();
+						  }
                           /*
-                          在1秒时，加入播放下一曲的任务，不过任务延迟1秒进行。因为当前播放时间与音乐时间并不是严格相等。
+                          鍦�绉掓椂锛屽姞鍏ユ挱鏀句笅涓�洸鐨勪换鍔★紝涓嶈繃浠诲姟寤惰繜1绉掕繘琛屻�鍥犱负褰撳墠鎾斁鏃堕棿涓庨煶涔愭椂闂村苟涓嶆槸涓ユ牸鐩哥瓑銆�
                            */
                           if (statusObj['downloading'] >= 1 && statusObj['cur'] >= statusObj['dur'] - 1000 && !statusObj['playing']){
                              clearTimeout(playNextTrackTiming);
@@ -127,7 +134,10 @@
                                   console.log('playNextTrack');
                               }, 100);
                           }
-                        }
+
+                        }else{
+                            $('.luoo-fm-player-body .poster .loading').show();
+                          }
                   },
                   function(e){
                     console.log(e);
@@ -183,11 +193,10 @@
 
 
             /*
-            播放界面，列表界面切换
+            鎾斁鐣岄潰锛屽垪琛ㄧ晫闈㈠垏鎹�
              */
             $('.logo').on('click', function(){
                var wid = $('.luoo-fm').width();
-
                 if ($('#luoo_list').css('left') == '0px'){
                     $('#luoo_player').show();
                     $('#luoo_list').show();
@@ -218,7 +227,7 @@
                 }                
             });
 
-            //播放列表曲目点击。播放之
+            //鎾斁鍒楄〃鏇茬洰鐐瑰嚮銆傛挱鏀句箣
             $('.list-wrap ul li').live('click', function(e){
               if (lock) return;
                 $('.list-wrap ul li.selected').removeClass('selected');
@@ -232,7 +241,7 @@
             });     
 
             /*
-            单期点击收放动作
+            鍗曟湡鐐瑰嚮鏀舵斁鍔ㄤ綔
              */
             $('.list-wrap ul h3').live('click', function(e){
               if (lock) return;
@@ -261,12 +270,13 @@
             });
 
             /*
-            phonegap加载完毕之后，通过插件获取播放列表，插件代码配置在myplaylist.js
+            phonegap鍔犺浇瀹屾瘯涔嬪悗锛岄�杩囨彃浠惰幏鍙栨挱鏀惧垪琛紝鎻掍欢浠ｇ爜閰嶇疆鍦╩yplaylist.js
              */
             
             document.addEventListener("deviceready", onDeviceReady, false);
             function onDeviceReady() { 
                 // get the latest playlist form start to end
+				
                 var getPlayList = function(start, end){
                     window.plugins.mediacontrol.getPlayList(start, function(result){
                         if (result.substr(-1) != '}'){
@@ -298,13 +308,14 @@
                         return;
                     });  
                 }
-                getPlayList(0, 4); 
+                getPlayList(0, 0); 
 
                 $('.luoo-fm .more ul div').on('click', function(){
                   var volsnum = $('.list-wrap ul').length;
                   getPlayList(volsnum, volsnum + 1);
              });
             }
+
                      
          });  
     </script></head>
@@ -314,7 +325,9 @@
       <div class="luoo-fm-player-body">
         <div class="logo"></div>
         <div class="poster">
-          <img src="" alt=""></div>
+          <img src="" alt=""></img>
+          <div class="loading"></div>
+        </div>
         <div class="track-info">
           <p class="title">undefined</p>
           <p class="album">undefined</p>
@@ -340,7 +353,7 @@
         <div class="more">
           <ul>
             <div>
-              <h3>加载更多</h3>
+              <h3>鍔犺浇鏇村</h3>
             </div>
           </ul>
         </div>

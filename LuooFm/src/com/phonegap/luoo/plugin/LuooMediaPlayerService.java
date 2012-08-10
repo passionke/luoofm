@@ -23,7 +23,7 @@ import android.util.Log;
 
 public class LuooMediaPlayerService extends Service {
 	private static final int INTIAL_KB_BUFFER =  128*10/8;//assume 128kbps*10secs/8bits per byte
-	private MediaPlayer mediaPlayer;
+	private MediaPlayer mediaPlayer =null;
 	private final Handler handler = new Handler();  
 	private File downloadingMediaFile;
 	private int totalKbRead = 0;
@@ -41,12 +41,14 @@ public class LuooMediaPlayerService extends Service {
 	private FileInputStream fis;
 	private static String lastDownloading;
 	
-	
+	public  boolean isstop = false;
 	public LuooMediaPlayerService() {
 	}
+	
 	public void setNewDownload(String mediaUrl) {
 		lastDownloading = mediaUrl;
 	}
+	
 	private void initUpdater(){
 		updater = new Runnable() {
 			public void run() {				
@@ -128,9 +130,12 @@ public class LuooMediaPlayerService extends Service {
 		};     
 		this.handler.removeCallbacks(updater);
 		this.handler.removeCallbacks(updater1);
-		initUpdater();
-		playerThread = new Thread(r);  
-		playerThread.start();
+	
+			initUpdater();
+			playerThread = new Thread(r);  
+			playerThread.start();
+
+
 	}  
 
 	public synchronized void downloadAudioIncrement(String mediaUrl) throws IOException {  
@@ -171,6 +176,7 @@ public class LuooMediaPlayerService extends Service {
 		}  
 		stream.close();  
 		out.close();
+		cn.disconnect();
 	}
 	public void flushCacheFiles() {
 		File file = new File(Environment.getExternalStorageDirectory() + "/LuooFm/download/");
@@ -203,7 +209,9 @@ public class LuooMediaPlayerService extends Service {
 			mediaPlayer = createMediaPlayer(bufferedFile);  
 			mediaPlayer.seekTo(0);
 			// We have pre-loaded enough content and started the MediaPlayer so update the buttons & progress meters.  
-			mediaPlayer.start();  
+			if(!isstop){
+				mediaPlayer.start();
+			}
 		} catch (IOException e) {  
 			Log.e(getClass().getName(), "Error initializing the MediaPlayer.", e);  
 		}     
@@ -213,9 +221,10 @@ public class LuooMediaPlayerService extends Service {
 		try{
 			if (this.mediaPlayer != null){
 				return "{\"cur\":" + this.mediaPlayer.getCurrentPosition() + 
-						", \"dur\":" + this.mediaPlayer.getDuration() + ", \"playing\":" + 
-						this.mediaPlayer.isPlaying() + ", \"downloading\":" + 
-						(1.0 *totalBytesRead/totalLength)+ "}";
+						", \"dur\":" + this.mediaPlayer.getDuration() + 
+						", \"playing\":" + this.mediaPlayer.isPlaying() + 
+						", \"stop\":" + isstop+
+						", \"downloading\":" + (1.0 *totalBytesRead/totalLength)+ "}";
 			}else{
 				return "{}";
 			}		
@@ -256,6 +265,7 @@ public class LuooMediaPlayerService extends Service {
 		} catch (Exception e) {  
 			e.printStackTrace();  
 		}  
+		
 	}  
 
 	public void moveFile(File oldLocation, File newLocation) throws IOException { 
@@ -301,7 +311,10 @@ public class LuooMediaPlayerService extends Service {
 		// Create a new MediaPlayer rather than try to re-prepare the prior one.  
 		mediaPlayer = createMediaPlayer(destFile);
 		mediaPlayer.seekTo(seek);  
-		mediaPlayer.start();
+		
+		if(!isstop){
+			mediaPlayer.start();
+		}
 	}
 	public void playLocalMedia(File destFile) throws IOException{
 		Log.d("my", "Play local file" + destFile.getAbsolutePath());
@@ -313,7 +326,10 @@ public class LuooMediaPlayerService extends Service {
 		// Create a new MediaPlayer rather than try to re-prepare the prior one.  
 		mediaPlayer = createMediaPlayer(destFile);
 		mediaPlayer.seekTo(currentDuratition);  
-		mediaPlayer.start();
+		if(!isstop){
+			mediaPlayer.start();
+		}
+		
 	}
 	private void transferBufferToMediaPlayer() {  
 		try {  
@@ -335,7 +351,10 @@ public class LuooMediaPlayerService extends Service {
 			//  Restart if at end of prior buffered content or mediaPlayer was previously playing.    
 			//    NOTE:  We test for < 1second of data because the media player can stop when there is still  
 			//  a few milliseconds of data left to play  
-			mediaPlayer.start();
+			if(!isstop) {
+				mediaPlayer.start();			
+			}	
+
 			// Lastly delete the previously playing buffered File as it's no longer needed.  
 			oldBufferedFile.delete(); 
 		}catch (Exception e) {  
@@ -377,27 +396,42 @@ public class LuooMediaPlayerService extends Service {
 	}  
 	@Override
 	public void onCreate() {
-
+		Log.d("myx", "on create");  
 	}
 
 	@Override  
 	public void onStart(Intent intent, int startId) {  
-		Log.d("my", "on start");       
+		Log.d("my", "on start");
+		Log.d("myx", "on start");  
+		super.onStart(intent, startId);
 	}
 
 	@Override  
 	public void onDestroy() { 
-		super.onDestroy();
+
 		Log.d("my", "GONE");		
 //		this.mediaPlayer.release();
 //		this.player.release();
+		
+/*		
+		this.handler.removeCallbacks(updater);
+		this.handler.removeCallbacks(updater1);
+		try{
+			if(playerThread != null) playerThread.stop();
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+*/
 		this.flushCacheFiles();
 		if (mediaPlayer != null){
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
+
 		}
-		
+		super.onDestroy();
+        System.exit(0);
 	}  
 	
 

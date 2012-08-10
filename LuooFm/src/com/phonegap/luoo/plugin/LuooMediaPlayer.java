@@ -7,6 +7,9 @@ import org.json.JSONException;
 
 
 
+
+import android.util.Log;
+
 import com.phonegap.api.Plugin;
 import com.phonegap.api.PluginResult;
 
@@ -26,12 +29,17 @@ public class LuooMediaPlayer extends Plugin {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else if (action.equals("play")){			
+		}else if (action.equals("play")){		
+			
 			try {
-				String playargs = args.getString(0);
-				String url = playargs.split(",")[0];
-				String vol = playargs.split(",")[1];
+				String[] playargs = args.getString(0).split(",");
+				String url = playargs[0];
+				String vol = playargs[1];
+				String title = playargs[2];
+				String artist =playargs[3];
+				Log.d("my", "notitification " + title + "artist" + artist);
 				LuooFm.play(url, vol);
+				LuooFm.showNotification(this.ctx, vol, title + " - " + artist);
 				result = "ok~";
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -45,15 +53,29 @@ public class LuooMediaPlayer extends Plugin {
 		}else if (action.equals("resume")) {
 			try {
 				LuooFm.play();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else if (action.equals("getPlayingStatus")){
 			result = LuooFm.getPlayingStatus();
+		}else if (action.equals("updatenotification")){
+			
 		}else{
 			status = PluginResult.Status.INVALID_ACTION;
 		}
 		return new PluginResult(status, result);
 	}
+
+	/* (non-Javadoc)
+	 * @see com.phonegap.api.Plugin#onDestroy()
+	 */
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+	
+	
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent" 
+android:layout_height="fill_parent"
+android:gravity="bottom|center" 
+android:orientation="vertical"
+android:background="@drawable/time" >
+    
+<TextView 
+
+android:text="@+id/TextView01" 
+
+android:layout_width="wrap_content"
+
+android:layout_height="wrap_content" 
+
+android:layout_marginTop="20dip"
+
+android:typeface="sans" 
+
+android:shadowDx="0" 
+
+android:shadowDy="2"
+
+android:shadowRadius="1" 
+
+android:shadowColor="#FFFFFF"
+
+android:textColor="#444444"
+
+android:textSize="20dip" 
+
+android:id="@+id/versionNumber"
+
+android:gravity="bottom">
+
+</TextView>
+</LinearLayout>
