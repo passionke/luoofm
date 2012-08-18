@@ -419,38 +419,8 @@ public class LuooMediaPlayerService extends Service {
 	@Override  
 	public void onDestroy() { 
 
-		Log.d("my", "GONE");		
-<<<<<<< HEAD
-=======
-//		this.mediaPlayer.release();
-//		this.player.release();
-		
-/*		
-		this.handler.removeCallbacks(updater);
-		this.handler.removeCallbacks(updater1);
-		try{
-			if(playerThread != null) playerThread.stop();
-		
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-*/
->>>>>>> merge frome weibi luoofm-1
-		this.flushCacheFiles();
-		this.isInterrupted = true;
-		if (mediaPlayer != null){
-			mediaPlayer.stop();
-			mediaPlayer.release();
-			mediaPlayer = null;
-
-		}
-<<<<<<< HEAD
-		
-		
-=======
 		super.onDestroy();
         System.exit(0);
->>>>>>> merge frome weibi luoofm-1
 	}  
 	
 
